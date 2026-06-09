@@ -4,32 +4,60 @@
 const files = [
 
     {
-        name: "فایل نمونه PDF",
-        description: "توضیح کوتاه درباره فایل PDF",
-        size: "2.5 MB",
-        file: "files/sample.pdf",
+        name: "جلسه اول",
+        description: "دست نویس جزوه جلسه اول",
+        size: "1.5 MB",
+        file: "1.pdf",
     },
 
     {
-        name: "فایل فشرده ZIP",
-        description: "توضیح کوتاه برای فایل ZIP",
-        size: "15 MB",
-        file: "files/archive.zip",
+        name: "جلسه دوم",
+        description: "دست نویس جزوه جلسه دوم",
+        size: "5 MB",
+        file: "2.pdf",
     },
 
     {
-        name: "تصویر نمونه",
-        description: "فایل تصویری برای مشاهده آنلاین",
-        size: "1.2 MB",
-        file: "files/image.jpg",
+        name: "جلسه سوم",
+        description: "دست نویس جزوه جلسه سوم",
+        size: "6.5 MB",
+        file: "3.pdf",
     },
 
     {
-        name: "ویدیو آموزشی",
-        description: "مشاهده آنلاین و دانلود فایل ویدیویی",
-        size: "35 MB",
-        file: "files/video.mp4",
-    }
+        name: "جلسه چهارم",
+        description: "دست نویس جزوه جلسه چهارم",
+        size: "8 MB",
+        file: "4.pdf",
+    },
+
+    {
+        name: "جلسه پنجم",
+        description: "دست نویس جزوه جلسه پنجم",
+        size: "17.5 MB",
+        file: "5.pdf",
+    },
+
+    {
+        name: "جلسه ششم",
+        description: "دست نویس جزوه جلسه ششم",
+        size: "1.5 MB",
+        file: "6.pdf",
+    },
+
+    {
+        name: "جلسه هفتم",
+        description: "دست نویس جزوه جلسه هفتم",
+        size: "22 MB",
+        file: "7.pdf",
+    },
+
+    {
+        name: "جلسه هشتم",
+        description: "دست نویس جزوه جلسه هشتم",
+        size: "9 MB",
+        file: "8.pdf",
+    },
 
 ]; 
 
