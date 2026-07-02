@@ -3,60 +3,123 @@
 // =========================
 const files = [
 
-    {
-        name: "جلسه اول",
-        description: "دست نویس جزوه جلسه اول",
-        size: "1.5 MB",
-        file: "1.pdf",
+   {
+        name: "1 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 1.pdf",
     },
 
     {
-        name: "جلسه دوم",
-        description: "دست نویس جزوه جلسه دوم",
-        size: "5 MB",
-        file: "2.pdf",
+        name: "2 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 2.pdf",
     },
 
     {
-        name: "جلسه سوم",
-        description: "دست نویس جزوه جلسه سوم",
-        size: "6.5 MB",
-        file: "3.pdf",
+        name: "3 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 3.pdf",
     },
 
     {
-        name: "جلسه چهارم",
-        description: "دست نویس جزوه جلسه چهارم",
-        size: "8 MB",
-        file: "4.pdf",
+        name: "4 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 4.pdf",
     },
 
     {
-        name: "جلسه پنجم",
-        description: "دست نویس جزوه جلسه پنجم",
-        size: "17.5 MB",
-        file: "5.pdf",
+        name: "5 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 5.pdf",
     },
 
     {
-        name: "جلسه ششم",
-        description: "دست نویس جزوه جلسه ششم",
-        size: "1.5 MB",
-        file: "6.pdf",
+        name: "6 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 6 (2).pdf",
     },
 
     {
-        name: "جلسه هفتم",
-        description: "دست نویس جزوه جلسه هفتم",
-        size: "22 MB",
-        file: "7.pdf",
+        name: "7 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 7.pdf",
     },
 
     {
-        name: "جلسه هشتم",
-        description: "دست نویس جزوه جلسه هشتم",
-        size: "9 MB",
-        file: "8.pdf",
+        name: "8 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 8.pdf",
+    },
+
+    {
+        name: "9 جلسه  ",
+        description: "",
+        size: "",
+        file: "دست نویس 9.pdf",
+    },
+
+    {
+        name: " نمونه سوال  ",
+        description: "",
+        size: "",
+        file: "نمونه سوالات فارسی.pdf ",
+    },
+
+    {
+        name: " جزوه دستور  ",
+        description: "",
+        size: "",
+        file: "جزوهٔ جمع_بندی دستور زبان ۱۱.pdf ",
+    },
+
+    {
+        name: "  جزوه آرایه ",
+        description: "",
+        size: "",
+        file: "جمع بندی آرایه.pdf ",
+    },
+
+    {
+        name: " جزوه مفهوم و درک مطلب  ",
+        description: "",
+        size: "",
+        file: "درک مطلب و مفهوم 11، نیم سال اول.pdf ",
+    },
+
+    {
+        name: " جزوه تاریخ ادبیات  ",
+        description: "",
+        size: "",
+        file: "tarikhadabiat ghalebha p11.pdf ",
+    },
+
+    {
+        name: " جزوه املا  ",
+        description: "",
+        size: "",
+        file: "املا فارسی یازدهم.pdf ",
+    },
+
+    {
+        name: " پر شده کامل جزوه دستور  ",
+        description: "",
+        size: "",
+        file: "جمع_بندی دستور ۱۱ - کامل.pdf ",
+    },
+
+    {
+        name: "  پر شده کامل جزوه آرایه ",
+        description: "",
+        size: "",
+        file: "__جمع_بندی آرایه ۱۱ - کامل_.pdf ",
     },
 
 ]; 
