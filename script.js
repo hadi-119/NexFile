@@ -67,13 +67,6 @@ const files = [
     },
 
     {
-        name: " نمونه سوال  ",
-        description: "",
-        size: "",
-        file: "نمونه سوالات فارسی.pdf ",
-    },
-
-    {
         name: " جزوه دستور  ",
         description: "",
         size: "",
@@ -106,20 +99,6 @@ const files = [
         description: "",
         size: "",
         file: "املا فارسی یازدهم.pdf ",
-    },
-
-    {
-        name: " پر شده کامل جزوه دستور  ",
-        description: "",
-        size: "",
-        file: "جمع_بندی دستور ۱۱ - کامل.pdf ",
-    },
-
-    {
-        name: "  پر شده کامل جزوه آرایه ",
-        description: "",
-        size: "",
-        file: "__جمع_بندی آرایه ۱۱ - کامل_.pdf ",
     },
 
 ]; 
