@@ -42,7 +42,7 @@
     </h2>
 
     <a href="#home">خانه</a>
-    <a href="#downloads">دانلودها</a>
+    <a href="#downloads">فایل ها</a>
 
     <button id="themeToggle" class="mobile-theme-btn">
         🌙 تغییر حالت
@@ -81,9 +81,19 @@
 <!-- Downloads Section -->
 <main class="downloads-section" id="downloads">
 
-    <h2 class="section-title">
-        فایل‌ها 
-    </h2>
+    <div class="search-box">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="جستجوی فایل..."
+    >
+
+    <button id="clearSearch" class="clear-search">
+        ✕
+    </button>
+
+</div>
 
    
     <div class="files-grid" id="filesGrid"></div>
@@ -113,6 +123,32 @@
 </button>
 
 <div id="menuOverlay"></div>
+
+<!-- Preview Modal -->
+
+<div id="previewModal" class="preview-modal">
+
+    <div class="preview-box">
+
+        <button id="closePreview" class="preview-close">
+            ✕
+        </button>
+
+        <h2 id="previewTitle"></h2>
+
+        <div id="previewContent"></div>
+
+        <a id="previewDownload"
+           class="download-btn"
+           download>
+
+            دانلود فایل
+
+        </a>
+
+    </div>
+
+</div>
 
 <script src="script.js"></script>
 
