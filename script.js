@@ -355,3 +355,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+
+// =========================
+// LOADING SCREEN
+// =========================
+
+document.body.classList.add("loading");
+
+window.addEventListener("load", () => {
+
+    const loader = document.getElementById("loader");
+
+    setTimeout(() => {
+
+        loader.classList.add("hide");
+        document.body.classList.remove("loading");
+
+    }, 700);
+
+});
