@@ -105,9 +105,26 @@ const files = [
 
 const filesGrid = document.getElementById("filesGrid");
 
-if(filesGrid){
+function renderFiles(filesList){
 
-    files.forEach(file => {
+    if(!filesGrid) return;
+
+    filesGrid.innerHTML = "";
+    if(filesList.length === 0){
+
+    filesGrid.innerHTML = `
+        <div class="empty-search">
+
+            <h3>فایلی پیدا نشد 😕</h3>
+
+        </div>
+    `;
+
+    return;
+
+}
+
+    filesList.forEach(file => {
 
         filesGrid.innerHTML += `
             <div class="file-card">
@@ -126,38 +143,85 @@ if(filesGrid){
 
                 <div class="file-buttons">
 
-    ${
-        file.file.endsWith(".zip")
-        ?
-        `
-        <a href="${file.file}"
-           download
-           class="download-btn full-width">
-           دانلود
-        </a>
-        `
-        :
-        `
-        <a href="${file.file}"
-           target="_blank"
-           class="view-btn">
-           نمایش
-        </a>
+                    ${
+                        file.file.endsWith(".zip")
+                        ?
+                        `
+                        <a href="${file.file}"
+                           download
+                           class="download-btn full-width">
+                           دانلود
+                        </a>
+                        `
+                        :
+                        `
+                        <a href="${file.file}"
+                           target="_blank"
+                           class="view-btn">
+                           نمایش
+                        </a>
 
-        <a href="${file.file}"
-           download
-           class="download-btn">
-           دانلود
-        </a>
-        `
-    }
+                        <a href="${file.file}"
+                           download
+                           class="download-btn">
+                           دانلود
+                        </a>
+                        `
+                    }
 
-</div>
+                </div>
 
             </div>
         `;
 
     });
+
+}
+
+renderFiles(files);
+
+// =========================
+// LIVE SEARCH
+// =========================
+
+const searchInput = document.getElementById("searchInput");
+const clearSearch = document.getElementById("clearSearch");
+
+if(searchInput){
+
+    searchInput.addEventListener("input", () => {
+
+        const value = searchInput.value.trim().toLowerCase();
+        clearSearch.classList.toggle("show", value !== "");
+
+        const filteredFiles = files.filter(file => {
+
+            return (
+                file.name.toLowerCase().includes(value) ||
+                file.description.toLowerCase().includes(value)
+            );
+
+        });
+
+        renderFiles(filteredFiles);
+
+    });
+
+    if(clearSearch){
+
+    clearSearch.addEventListener("click", () => {
+
+        searchInput.value = "";
+
+        renderFiles(files);
+
+        clearSearch.classList.remove("show");
+
+        searchInput.focus();
+
+    });
+
+}
 
 }
 
