@@ -616,3 +616,66 @@ SMALL MOBILE
     visibility:visible;
     pointer-events:auto;
 }
+
+/* =========================
+LOADING SCREEN
+========================= */
+
+#loader{
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--cream);
+
+    z-index: 999999;
+
+    transition: opacity .5s ease, visibility .5s ease;
+}
+
+#loader.hide{
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-box{
+    text-align: center;
+}
+
+.loader-box h2{
+    margin-top: 20px;
+    color: var(--olive);
+    font-size: 2rem;
+}
+
+.loader-box p{
+    margin-top: 8px;
+    opacity: .7;
+}
+
+.spinner{
+    width: 70px;
+    height: 70px;
+
+    border: 6px solid rgba(107,122,58,.15);
+    border-top: 6px solid var(--olive);
+
+    border-radius: 50%;
+
+    animation: spin .9s linear infinite;
+
+    margin: auto;
+}
+
+@keyframes spin{
+    to{
+        transform: rotate(360deg);
+    }
+}
+
+body.loading{
+    overflow: hidden;
+}
