@@ -340,29 +340,16 @@ transition:var(--transition);
 
 }
 
-.preview-close{
+.view-btn{
 
-    transition:
-        background .25s ease,
-        transform .25s ease,
-        box-shadow .25s ease;
+    background:transparent;
+    border:2px solid var(--olive);
+    color:var(--olive);
 
-}
+    font-family:inherit;
+    font-size:1rem;
 
-.preview-close:hover{
-
-    background:#ff5a47;
-
-    transform:scale(1.12);
-
-    box-shadow:
-        0 8px 20px rgba(231,76,60,.35);
-
-}
-
-.preview-close:active{
-
-    transform:scale(.92);
+    cursor:pointer;
 
 }
 
