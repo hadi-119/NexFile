@@ -340,10 +340,30 @@ transition:var(--transition);
 
 }
 
-.view-btn{
-background:transparent;
-border:2px solid var(--olive);
-color:var(--olive);
+.preview-close{
+
+    transition:
+        background .25s ease,
+        transform .25s ease,
+        box-shadow .25s ease;
+
+}
+
+.preview-close:hover{
+
+    background:#ff5a47;
+
+    transform:scale(1.12);
+
+    box-shadow:
+        0 8px 20px rgba(231,76,60,.35);
+
+}
+
+.preview-close:active{
+
+    transform:scale(.92);
+
 }
 
 .view-btn:hover{
@@ -894,9 +914,30 @@ PREVIEW MODAL
     transition:.25s;
 }
 
+.preview-close{
+
+    transition:
+        background .25s ease,
+        transform .25s ease,
+        box-shadow .25s ease;
+
+}
+
 .preview-close:hover{
 
-    transform:rotate(90deg) scale(1.08);
+    background:#ff5a47;
+
+    transform:scale(1.12);
+
+    box-shadow:
+        0 8px 20px rgba(231,76,60,.35);
+
+}
+
+.preview-close:active{
+
+    transform:scale(.92);
+
 }
 
 #previewTitle{
