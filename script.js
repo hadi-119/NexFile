@@ -3,7 +3,7 @@
 // =========================
 const files = [
 
-   {
+  {
         name: "1 جلسه  ",
         description: "",
         size: "",
@@ -104,6 +104,65 @@ const files = [
 ]; 
 
 const filesGrid = document.getElementById("filesGrid");
+const previewModal = document.getElementById("previewModal");
+const previewContent = document.getElementById("previewContent");
+const previewTitle = document.getElementById("previewTitle");
+const previewDownload = document.getElementById("previewDownload");
+const closePreview = document.getElementById("closePreview");
+
+function openPreview(file){
+
+    previewTitle.textContent = file.name;
+
+    previewDownload.href = file.file;
+
+    previewContent.innerHTML = "";
+
+    const extension = file.file.split(".").pop().toLowerCase();
+
+    if(["jpg","jpeg","png","gif","webp"].includes(extension)){
+
+        previewContent.innerHTML = `
+            <img src="${file.file}" alt="${file.name}">
+        `;
+
+    }
+    else if(extension === "pdf"){
+
+        previewContent.innerHTML = `
+            <iframe src="${file.file}"></iframe>
+        `;
+
+    }
+    else if(["mp4","webm","ogg"].includes(extension)){
+
+        previewContent.innerHTML = `
+            <video controls>
+                <source src="${file.file}">
+            </video>
+        `;
+
+    }
+    else if(["mp3","wav"].includes(extension)){
+
+        previewContent.innerHTML = `
+            <audio controls>
+                <source src="${file.file}">
+            </audio>
+        `;
+
+    }
+    else{
+
+        previewContent.innerHTML = `
+            <p>پیش‌نمایش این فایل امکان‌پذیر نیست.</p>
+        `;
+
+    }
+
+    previewModal.classList.add("show");
+
+}
 
 function renderFiles(filesList){
 
@@ -155,11 +214,11 @@ function renderFiles(filesList){
                         `
                         :
                         `
-                        <a href="${file.file}"
-                           target="_blank"
-                           class="view-btn">
-                           نمایش
-                        </a>
+                        <button
+    class="view-btn preview-btn"
+    data-file="${file.name}">
+    نمایش
+</button>
 
                         <a href="${file.file}"
                            download
@@ -175,6 +234,22 @@ function renderFiles(filesList){
         `;
 
     });
+
+    document.querySelectorAll(".preview-btn").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        const file = files.find(item => item.name === button.dataset.file);
+
+        if(file){
+
+            openPreview(file);
+
+        }
+
+    });
+
+});
 
 }
 
@@ -436,5 +511,52 @@ window.addEventListener("load", () => {
         document.body.classList.remove("loading");
 
     }, 700);
+
+});
+
+function closePreviewModal(){
+
+    previewModal.classList.remove("show");
+
+    const media = previewContent.querySelector("video, audio");
+
+    if(media){
+
+        media.pause();
+        media.currentTime = 0;
+
+    }
+
+    setTimeout(() => {
+
+        previewContent.innerHTML = "";
+
+    }, 300);
+
+}
+
+// =========================
+// CLOSE PREVIEW
+// =========================
+
+closePreview.addEventListener("click", closePreviewModal);
+
+previewModal.addEventListener("click", (e) => {
+
+    if(e.target === previewModal){
+
+    closePreviewModal();
+
+}
+
+});
+
+document.addEventListener("keydown", (e) => {
+
+    if(e.key === "Escape"){
+
+    closePreviewModal();
+
+}
 
 });
