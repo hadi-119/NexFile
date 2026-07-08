@@ -9,6 +9,12 @@ const explorer = [
 
     children: [
 
+       {
+    id: "programming",
+    type: "folder",
+    name: "جزوات دست نویس",
+
+    children: [
         {
         name: "1 جلسه  ",
         description: "",
@@ -71,8 +77,16 @@ const explorer = [
         size: "",
         file: "دست نویس 9.pdf",
     },
+    ]   
+       }
 
-    {
+{
+    id: "programming",
+    type: "folder",
+    name: "جزوات خام",
+
+    children: [
+        {
         name: " جزوه دستور  ",
         description: "",
         size: "",
@@ -106,7 +120,9 @@ const explorer = [
         size: "",
         file: "املا فارسی یازدهم.pdf ",
     },
-
+    ]   
+       }
+        
         
     ]
 },
