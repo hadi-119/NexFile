@@ -1,9 +1,15 @@
 // =========================
 // MOBILE MENU
 // =========================
-const files = [
+const explorer = [
+    {
+    id: "programming",
+    type: "folder",
+    name: " جزوات فارسی افضلی",
 
-  {
+    children: [
+
+        {
         name: "1 جلسه  ",
         description: "",
         size: "",
@@ -101,9 +107,154 @@ const files = [
         file: "املا فارسی یازدهم.pdf ",
     },
 
-]; 
+        
+    ]
+},
+
+     
+];
+
+function getAllFiles(items, path = []) {
+
+    let result = [];
+
+    items.forEach(item => {
+
+        if (item.type === "folder") {
+
+            result.push(
+                ...getAllFiles(
+                    item.children,
+                    [...path, item.name]
+                )
+            );
+
+        } else {
+
+            result.push({
+                ...item,
+                path: [...path]
+            });
+
+        }
+
+    });
+
+    return result;
+
+}
+
+function findFolderByPath(items, path) {
+
+    let current = items;
+
+    for (const name of path) {
+
+        const folder = current.find(item =>
+            item.type === "folder" && item.name === name
+        );
+
+        if (!folder) return null;
+
+        current = folder.children;
+
+    }
+
+    return current;
+
+}
+
+function openFolderByPath(path){
+
+    history = [];
+
+    let current = explorer;
+
+    path.forEach(name => {
+
+        history.push([...current]);
+
+        const folder = current.find(item =>
+            item.type === "folder" && item.name === name
+        );
+
+        if(!folder) return;
+
+        current = folder.children;
+
+    });
+
+    currentFolder = current;
+
+currentPath = [...path];
+
+updateBreadcrumb();
+
+renderExplorer(currentFolder);
+
+}
+
+function updateBreadcrumb() {
+
+    const breadcrumb = document.getElementById("breadcrumb");
+
+    if (!breadcrumb) return;
+
+    breadcrumb.innerHTML = "";
+
+    // خانه
+    const home = document.createElement("a");
+    home.textContent = "خانه";
+    home.href = "#";
+    home.addEventListener("click", e => {
+        e.preventDefault();
+        openFolderByPath([]);
+    });
+
+    breadcrumb.appendChild(home);
+
+    currentPath.forEach((name, index) => {
+
+        const separator = document.createElement("span");
+        separator.textContent = " > ";
+        breadcrumb.appendChild(separator);
+
+        if (index === currentPath.length - 1) {
+
+            const span = document.createElement("span");
+            span.textContent = name;
+            breadcrumb.appendChild(span);
+
+        } else {
+
+            const link = document.createElement("a");
+            link.href = "#";
+            link.textContent = name;
+
+            link.addEventListener("click", e => {
+
+                e.preventDefault();
+
+                openFolderByPath(currentPath.slice(0, index + 1));
+
+            });
+
+            breadcrumb.appendChild(link);
+
+        }
+
+    });
+
+}
+
+let currentFolder = explorer;
+
+let history = [];
+
+let currentPath = [];
 
 const filesGrid = document.getElementById("filesGrid");
+const backButton = document.getElementById("backButton");
 const previewModal = document.getElementById("previewModal");
 const previewContent = document.getElementById("previewContent");
 const previewTitle = document.getElementById("previewTitle");
@@ -164,12 +315,103 @@ function openPreview(file){
 
 }
 
-function renderFiles(filesList){
+function renderExplorer(items){
+
+    if(history.length > 0){
+
+    backButton.style.display = "inline-block";
+
+}else{
+
+    backButton.style.display = "none";
+
+}
+
+    if(items.length === 0){
+
+        renderFiles([]);
+
+        return;
+
+    }
+
+    if(items[0].type === "folder"){
+
+        renderFolders(items);
+
+        return;
+
+    }
+
+    renderFiles(items);
+
+}
+
+function renderFolders(folderList){
+
+    filesGrid.innerHTML = "";
+
+    folderList.forEach(folder => {
+
+        filesGrid.innerHTML += `
+
+            <div class="file-card folder-card" data-id="${folder.id}">
+
+                <h3 class="file-name">
+                    📁 ${folder.name}
+                </h3>
+
+                <p class="file-description">
+                    پوشه
+                </p>
+
+            </div>
+
+        `;
+
+    });
+
+    document.querySelectorAll(".folder-card").forEach(card => {
+
+    card.addEventListener("click", () => {
+
+        const folder = folderList.find(item => item.id === card.dataset.id);
+
+        if(!folder) return;
+
+        
+
+history.push([...currentFolder]);
+
+currentPath.push(folder.name);
+
+currentFolder = folder.children;
+
+updateBreadcrumb();
+
+if(currentFolder.length === 0){
+
+    renderExplorer([]);
+
+    return;
+
+}
+
+renderExplorer(currentFolder);
+
+    });
+
+});
+
+}
+
+function renderFiles(items){
 
     if(!filesGrid) return;
 
     filesGrid.innerHTML = "";
-    if(filesList.length === 0){
+    const currentFiles = items;
+    if(items.length === 0){
 
     filesGrid.innerHTML = `
         <div class="empty-search">
@@ -183,7 +425,7 @@ function renderFiles(filesList){
 
 }
 
-    filesList.forEach(file => {
+    items.forEach(file => {
 
         filesGrid.innerHTML += `
             <div class="file-card">
@@ -214,6 +456,19 @@ function renderFiles(filesList){
                         `
                         :
                         `
+                    ${
+    file.path
+    ?
+    `
+    <button
+        class="goto-folder-btn"
+        data-path="${file.path.join("|")}">
+        📂 برو به پوشه
+    </button>
+    `
+    :
+    ""
+}
                         <button
     class="view-btn preview-btn"
     data-file="${file.name}">
@@ -235,11 +490,32 @@ function renderFiles(filesList){
 
     });
 
-    document.querySelectorAll(".preview-btn").forEach(button => {
+    document.querySelectorAll(".goto-folder-btn").forEach(button => {
 
     button.addEventListener("click", () => {
 
-        const file = files.find(item => item.name === button.dataset.file);
+        const path = button.dataset.path.split("|");
+
+        const folder = findFolderByPath(explorer, path);
+
+        if (!folder) return;
+
+       openFolderByPath(path);
+
+searchInput.value = "";
+
+clearSearch.classList.remove("show");
+searchInput.blur();
+
+    });
+
+});
+
+document.querySelectorAll(".preview-btn").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        const file = currentFiles.find(item => item.name === button.dataset.file);
 
         if(file){
 
@@ -253,7 +529,7 @@ function renderFiles(filesList){
 
 }
 
-renderFiles(files);
+renderExplorer(currentFolder);
 
 // =========================
 // LIVE SEARCH
@@ -269,7 +545,9 @@ if(searchInput){
         const value = searchInput.value.trim().toLowerCase();
         clearSearch.classList.toggle("show", value !== "");
 
-        const filteredFiles = files.filter(file => {
+        const allFiles = getAllFiles(explorer);
+
+const filteredFiles = allFiles.filter(file => {
 
             return (
                 file.name.toLowerCase().includes(value) ||
@@ -277,6 +555,14 @@ if(searchInput){
             );
 
         });
+
+        if (value === "") {
+
+    renderExplorer(currentFolder);
+
+    return;
+
+}
 
         renderFiles(filteredFiles);
 
@@ -288,7 +574,7 @@ if(searchInput){
 
         searchInput.value = "";
 
-        renderFiles(files);
+        renderExplorer(currentFolder);
 
         clearSearch.classList.remove("show");
 
@@ -558,5 +844,19 @@ document.addEventListener("keydown", (e) => {
     closePreviewModal();
 
 }
+
+});
+
+backButton.addEventListener("click", () => {
+
+    if (history.length === 0) return;
+
+    currentFolder = history.pop();
+
+    currentPath.pop();
+
+    renderExplorer(currentFolder);
+
+    updateBreadcrumb();
 
 });
