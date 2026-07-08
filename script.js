@@ -78,10 +78,10 @@ const explorer = [
         file: "دست نویس 9.pdf",
     },
     ]   
-       }
+       },
 
 {
-    id: "programming",
+    id: "books",
     type: "folder",
     name: "جزوات خام",
 
