@@ -5,7 +5,10 @@
 
 const ADMIN_STORAGE_KEY = "nexfile_admin_data";
 
+// =========================
 // اطلاعات پیش‌فرض سایت
+// =========================
+
 const defaultExplorer = [
     {
         id: "programming",
@@ -83,7 +86,6 @@ const defaultExplorer = [
     }
 ];
 
-
 // =========================
 // تبدیل اطلاعات پنل مدیریت
 // به ساختار explorer سایت
@@ -123,47 +125,29 @@ function convertAdminDataToExplorer(data) {
 
             });
 
-
         // فایل‌های داخل این پوشه
         data.files
             .filter(file => file.folderId === folderId)
             .forEach(file => {
 
                 children.push({
-
+                    id: file.id,
                     name: file.name || "فایل بدون نام",
-
-                    description:
-                        file.description || "",
-
-                    size:
-                        file.size || "",
-
-                    // مسیر واقعی فایل
-                    // پنل مدیریت مسیر را در path ذخیره می‌کند
-                    file:
-                        file.path ||
-                        file.file ||
-                        ""
-
+                    description: file.description || "",
+                    size: file.size || "",
+                    file: file.path || file.file || "",
+                    date: file.date || ""
                 });
 
             });
 
-
         return {
-
             id: folder.id,
-
             type: "folder",
-
             name: folder.name,
-
             children: children
-
         };
     }
-
 
     // فقط پوشه‌های اصلی
     const rootFolders =
@@ -174,12 +158,10 @@ function convertAdminDataToExplorer(data) {
                 folder.parent === ""
         );
 
-
     return rootFolders
         .map(folder => buildFolder(folder.id))
         .filter(Boolean);
 }
-
 
 // =========================
 // دریافت اطلاعات از پنل
@@ -194,29 +176,21 @@ function loadExplorerData() {
                 ADMIN_STORAGE_KEY
             );
 
-
         if (!savedData) {
-
             return defaultExplorer;
-
         }
-
 
         const data =
             JSON.parse(savedData);
 
-
         const convertedData =
             convertAdminDataToExplorer(data);
-
 
         if (
             Array.isArray(convertedData) &&
             convertedData.length > 0
         ) {
-
             return convertedData;
-
         }
 
     }
@@ -229,15 +203,15 @@ function loadExplorerData() {
 
     }
 
-
     return defaultExplorer;
 }
 
-
+// =========================
 // اطلاعات نهایی سایت
-const explorer =
-    loadExplorerData();
+// =========================
 
+let explorer =
+    loadExplorerData();
 
 // =========================
 // FOLDER FUNCTIONS
@@ -253,7 +227,7 @@ function getAllFiles(items, path = []) {
 
             result.push(
                 ...getAllFiles(
-                    item.children,
+                    item.children || [],
                     [...path, item.name]
                 )
             );
@@ -262,11 +236,8 @@ function getAllFiles(items, path = []) {
         else {
 
             result.push({
-
                 ...item,
-
                 path: [...path]
-
             });
 
         }
@@ -276,81 +247,63 @@ function getAllFiles(items, path = []) {
     return result;
 }
 
-
-
 function findFolderByPath(items, path) {
 
     let current = items;
 
-
     for (const name of path) {
 
         const folder =
-            current.find(item =>
-                item.type === "folder" &&
-                item.name === name
+            current.find(
+                item =>
+                    item.type === "folder" &&
+                    item.name === name
             );
-
 
         if (!folder) return null;
 
-
         current =
-            folder.children;
-
+            folder.children || [];
     }
-
 
     return current;
 }
-
-
 
 function openFolderByPath(path) {
 
     history = [];
 
-
     let current = explorer;
-
 
     path.forEach(name => {
 
         history.push([...current]);
 
-
         const folder =
-            current.find(item =>
-                item.type === "folder" &&
-                item.name === name
+            current.find(
+                item =>
+                    item.type === "folder" &&
+                    item.name === name
             );
-
 
         if (!folder) return;
 
-
         current =
-            folder.children;
-
+            folder.children || [];
     });
-
 
     currentFolder =
         current;
 
-
     currentPath =
         [...path];
 
-
     updateBreadcrumb();
-
 
     renderExplorer(
         currentFolder
     );
 }
-
 
 // =========================
 // BREADCRUMB
@@ -363,25 +316,19 @@ function updateBreadcrumb() {
             "breadcrumb"
         );
 
-
     if (!breadcrumb) return;
 
-
     breadcrumb.innerHTML = "";
-
 
     // خانه
     const home =
         document.createElement("a");
 
-
     home.textContent =
         "خانه";
 
-
     home.href =
         "#";
-
 
     home.addEventListener(
         "click",
@@ -394,27 +341,20 @@ function updateBreadcrumb() {
         }
     );
 
-
     breadcrumb.appendChild(home);
-
 
     currentPath.forEach(
         (name, index) => {
 
             const separator =
-                document.createElement(
-                    "span"
-                );
-
+                document.createElement("span");
 
             separator.textContent =
                 " > ";
 
-
             breadcrumb.appendChild(
                 separator
             );
-
 
             if (
                 index ===
@@ -426,10 +366,8 @@ function updateBreadcrumb() {
                         "span"
                     );
 
-
                 span.textContent =
                     name;
-
 
                 breadcrumb.appendChild(
                     span
@@ -443,21 +381,17 @@ function updateBreadcrumb() {
                         "a"
                     );
 
-
                 link.href =
                     "#";
 
-
                 link.textContent =
                     name;
-
 
                 link.addEventListener(
                     "click",
                     e => {
 
                         e.preventDefault();
-
 
                         openFolderByPath(
                             currentPath.slice(
@@ -469,17 +403,14 @@ function updateBreadcrumb() {
                     }
                 );
 
-
                 breadcrumb.appendChild(
                     link
                 );
-
             }
 
         }
     );
 }
-
 
 // =========================
 // GLOBAL VARIABLES
@@ -488,54 +419,44 @@ function updateBreadcrumb() {
 let currentFolder =
     explorer;
 
-
 let history = [];
 
-
 let currentPath = [];
-
 
 const filesGrid =
     document.getElementById(
         "filesGrid"
     );
 
-
 const backButton =
     document.getElementById(
         "backButton"
     );
-
 
 const previewModal =
     document.getElementById(
         "previewModal"
     );
 
-
 const previewContent =
     document.getElementById(
         "previewContent"
     );
-
 
 const previewTitle =
     document.getElementById(
         "previewTitle"
     );
 
-
 const previewDownload =
     document.getElementById(
         "previewDownload"
     );
 
-
 const closePreview =
     document.getElementById(
         "closePreview"
     );
-
 
 // =========================
 // PREVIEW
@@ -543,24 +464,42 @@ const closePreview =
 
 function openPreview(file) {
 
+    if (!previewModal) return;
+
     previewTitle.textContent =
         file.name;
 
-
-    previewDownload.href =
-        file.file;
-
+    if (previewDownload) {
+        previewDownload.href =
+            file.file || "#";
+    }
 
     previewContent.innerHTML =
         "";
 
+    const filePath =
+        file.file || "";
+
+    if (!filePath) {
+
+        previewContent.innerHTML = `
+            <p>
+                مسیر فایل مشخص نشده است.
+            </p>
+        `;
+
+        previewModal.classList.add(
+            "show"
+        );
+
+        return;
+    }
 
     const extension =
-        file.file
+        filePath
             .split(".")
             .pop()
             .toLowerCase();
-
 
     if (
         [
@@ -573,30 +512,24 @@ function openPreview(file) {
     ) {
 
         previewContent.innerHTML = `
-
             <img
-                src="${file.file}"
+                src="${filePath}"
                 alt="${file.name}"
             >
-
         `;
 
     }
-
     else if (
         extension === "pdf"
     ) {
 
         previewContent.innerHTML = `
-
             <iframe
-                src="${file.file}">
+                src="${filePath}">
             </iframe>
-
         `;
 
     }
-
     else if (
         [
             "mp4",
@@ -606,19 +539,14 @@ function openPreview(file) {
     ) {
 
         previewContent.innerHTML = `
-
             <video controls>
-
                 <source
-                    src="${file.file}"
+                    src="${filePath}"
                 >
-
             </video>
-
         `;
 
     }
-
     else if (
         [
             "mp3",
@@ -627,37 +555,28 @@ function openPreview(file) {
     ) {
 
         previewContent.innerHTML = `
-
             <audio controls>
-
                 <source
-                    src="${file.file}"
+                    src="${filePath}"
                 >
-
             </audio>
-
         `;
 
     }
-
     else {
 
         previewContent.innerHTML = `
-
             <p>
                 پیش‌نمایش این فایل امکان‌پذیر نیست.
             </p>
-
         `;
 
     }
-
 
     previewModal.classList.add(
         "show"
     );
 }
-
 
 // =========================
 // RENDER EXPLORER
@@ -667,26 +586,27 @@ function renderExplorer(items) {
 
     if (history.length > 0) {
 
-        backButton.style.display =
-            "inline-block";
+        if (backButton) {
+            backButton.style.display =
+                "inline-block";
+        }
 
     }
     else {
 
-        backButton.style.display =
-            "none";
+        if (backButton) {
+            backButton.style.display =
+                "none";
+        }
 
     }
 
-
-    if (items.length === 0) {
+    if (!items || items.length === 0) {
 
         renderFiles([]);
 
         return;
-
     }
-
 
     if (
         items[0].type === "folder"
@@ -695,13 +615,10 @@ function renderExplorer(items) {
         renderFolders(items);
 
         return;
-
     }
-
 
     renderFiles(items);
 }
-
 
 // =========================
 // RENDER FOLDERS
@@ -709,38 +626,31 @@ function renderExplorer(items) {
 
 function renderFolders(folderList) {
 
+    if (!filesGrid) return;
+
     filesGrid.innerHTML =
         "";
-
 
     folderList.forEach(folder => {
 
         filesGrid.innerHTML += `
-
             <div
                 class="file-card folder-card"
                 data-id="${folder.id}"
             >
 
                 <h3 class="file-name">
-
                     📁 ${folder.name}
-
                 </h3>
 
-
                 <p class="file-description">
-
                     پوشه
-
                 </p>
 
             </div>
-
         `;
 
     });
-
 
     document
         .querySelectorAll(
@@ -759,38 +669,20 @@ function renderFolders(folderList) {
                                 card.dataset.id
                         );
 
-
                     if (!folder) return;
-
 
                     history.push(
                         [...currentFolder]
                     );
 
-
                     currentPath.push(
                         folder.name
                     );
 
-
                     currentFolder =
-                        folder.children;
-
+                        folder.children || [];
 
                     updateBreadcrumb();
-
-
-                    if (
-                        currentFolder.length ===
-                        0
-                    ) {
-
-                        renderExplorer([]);
-
-                        return;
-
-                    }
-
 
                     renderExplorer(
                         currentFolder
@@ -802,7 +694,6 @@ function renderFolders(folderList) {
         });
 }
 
-
 // =========================
 // RENDER FILES
 // =========================
@@ -811,158 +702,124 @@ function renderFiles(items) {
 
     if (!filesGrid) return;
 
-
     filesGrid.innerHTML =
         "";
 
-
     const currentFiles =
-        items;
+        items || [];
 
-
-    if (items.length === 0) {
+    if (currentFiles.length === 0) {
 
         filesGrid.innerHTML = `
-
             <div class="empty-search">
-
                 <h3>
-
                     فایلی پیدا نشد 😕
-
                 </h3>
-
             </div>
-
         `;
 
         return;
-
     }
 
+    currentFiles.forEach(file => {
 
-    items.forEach(file => {
+        const filePath =
+            file.file || "";
+
+        const isZip =
+            filePath
+                .toLowerCase()
+                .endsWith(".zip");
 
         filesGrid.innerHTML += `
-
             <div class="file-card">
 
                 <h3 class="file-name">
-
                     ${file.name}
-
                 </h3>
 
-
                 <p class="file-description">
-
                     ${file.description || ""}
-
                 </p>
-
 
                 ${
                     file.size
                     ?
                     `
-
                     <span class="file-size">
-
                         حجم: ${file.size}
-
                     </span>
-
                     `
                     :
                     ""
                 }
 
+                ${
+                    file.date
+                    ?
+                    `
+                    <span class="file-date">
+                        تاریخ: ${file.date}
+                    </span>
+                    `
+                    :
+                    ""
+                }
 
                 <div class="file-buttons">
 
                     ${
-                        file.file &&
-                        file.file
-                            .toLowerCase()
-                            .endsWith(".zip")
-
+                        isZip
                         ?
-
                         `
-
                         <a
-                            href="${file.file}"
+                            href="${filePath}"
                             download
                             class="download-btn full-width"
                         >
-
                             دانلود
-
                         </a>
-
                         `
-
                         :
-
                         `
-
                         ${
                             file.path
-
                             ?
-
                             `
-
                             <button
                                 class="goto-folder-btn"
                                 data-path="${file.path.join("|")}"
                             >
-
                                 📂 برو به پوشه
-
                             </button>
-
                             `
-
                             :
-
                             ""
-
                         }
-
 
                         <button
                             class="view-btn preview-btn"
-                            data-file="${file.name}"
+                            data-file="${file.id || file.name}"
                         >
-
                             نمایش
-
                         </button>
 
-
                         <a
-                            href="${file.file}"
+                            href="${filePath}"
                             download
                             class="download-btn"
                         >
-
                             دانلود
-
                         </a>
-
                         `
-
                     }
 
                 </div>
 
             </div>
-
         `;
 
     });
-
 
     // =========================
     // GO TO FOLDER
@@ -982,29 +839,22 @@ function renderFiles(items) {
                         button.dataset.path
                             .split("|");
 
-
                     const folder =
                         findFolderByPath(
                             explorer,
                             path
                         );
 
-
                     if (!folder) return;
-
 
                     openFolderByPath(
                         path
                     );
 
-
                     if (searchInput) {
-
                         searchInput.value =
                             "";
-
                     }
-
 
                     if (clearSearch) {
 
@@ -1014,18 +864,14 @@ function renderFiles(items) {
 
                     }
 
-
                     if (searchInput) {
-
                         searchInput.blur();
-
                     }
 
                 }
             );
 
         });
-
 
     // =========================
     // PREVIEW BUTTON
@@ -1044,24 +890,24 @@ function renderFiles(items) {
                     const file =
                         currentFiles.find(
                             item =>
-                                item.name ===
-                                button.dataset.file
+                                String(
+                                    item.id ||
+                                    item.name
+                                ) ===
+                                String(
+                                    button.dataset.file
+                                )
                         );
 
-
                     if (file) {
-
                         openPreview(file);
-
                     }
 
                 }
             );
 
         });
-
 }
-
 
 // =========================
 // FIRST RENDER
@@ -1071,6 +917,7 @@ renderExplorer(
     currentFolder
 );
 
+updateBreadcrumb();
 
 // =========================
 // LIVE SEARCH
@@ -1081,12 +928,10 @@ const searchInput =
         "searchInput"
     );
 
-
 const clearSearch =
     document.getElementById(
         "clearSearch"
     );
-
 
 if (searchInput) {
 
@@ -1099,7 +944,6 @@ if (searchInput) {
                     .trim()
                     .toLowerCase();
 
-
             if (clearSearch) {
 
                 clearSearch.classList.toggle(
@@ -1109,12 +953,10 @@ if (searchInput) {
 
             }
 
-
             const allFiles =
                 getAllFiles(
                     explorer
                 );
-
 
             const filteredFiles =
                 allFiles.filter(file => {
@@ -1138,7 +980,6 @@ if (searchInput) {
 
                 });
 
-
             if (value === "") {
 
                 renderExplorer(
@@ -1146,9 +987,7 @@ if (searchInput) {
                 );
 
                 return;
-
             }
-
 
             renderFiles(
                 filteredFiles
@@ -1156,7 +995,6 @@ if (searchInput) {
 
         }
     );
-
 
     if (clearSearch) {
 
@@ -1167,16 +1005,13 @@ if (searchInput) {
                 searchInput.value =
                     "";
 
-
                 renderExplorer(
                     currentFolder
                 );
 
-
                 clearSearch.classList.remove(
                     "show"
                 );
-
 
                 searchInput.focus();
 
@@ -1187,7 +1022,6 @@ if (searchInput) {
 
 }
 
-
 // =========================
 // MOBILE MENU
 // =========================
@@ -1197,18 +1031,15 @@ const hamburger =
         "hamburger"
     );
 
-
 const nav =
     document.getElementById(
         "nav"
     );
 
-
 const overlay =
     document.getElementById(
         "menuOverlay"
     );
-
 
 if (hamburger) {
 
@@ -1220,7 +1051,6 @@ if (hamburger) {
                 "active"
             );
 
-
             hamburger.classList.toggle(
                 "active"
             );
@@ -1229,7 +1059,6 @@ if (hamburger) {
     );
 
 }
-
 
 if (overlay) {
 
@@ -1241,11 +1070,9 @@ if (overlay) {
                 "active"
             );
 
-
             overlay.classList.remove(
                 "active"
             );
-
 
             hamburger.classList.remove(
                 "active"
@@ -1256,7 +1083,6 @@ if (overlay) {
 
 }
 
-
 // =========================
 // DARK MODE
 // =========================
@@ -1266,19 +1092,16 @@ const themeToggle =
         "themeToggle"
     );
 
-
 const themeToggleDesktop =
     document.getElementById(
         "themeToggleDesktop"
     );
-
 
 function toggleTheme() {
 
     document.body.classList.toggle(
         "dark"
     );
-
 
     if (
         document.body.classList.contains(
@@ -1291,14 +1114,12 @@ function toggleTheme() {
             "dark"
         );
 
-
         if (themeToggle) {
 
             themeToggle.innerHTML =
                 "☀️ حالت روشن";
 
         }
-
 
         if (themeToggleDesktop) {
 
@@ -1308,7 +1129,6 @@ function toggleTheme() {
         }
 
     }
-
     else {
 
         localStorage.setItem(
@@ -1316,14 +1136,12 @@ function toggleTheme() {
             "light"
         );
 
-
         if (themeToggle) {
 
             themeToggle.innerHTML =
                 "🌙 حالت تیره";
 
         }
-
 
         if (themeToggleDesktop) {
 
@@ -1336,7 +1154,6 @@ function toggleTheme() {
 
 }
 
-
 if (themeToggle) {
 
     themeToggle.addEventListener(
@@ -1345,7 +1162,6 @@ if (themeToggle) {
     );
 
 }
-
 
 if (themeToggleDesktop) {
 
@@ -1356,12 +1172,10 @@ if (themeToggleDesktop) {
 
 }
 
-
 const savedTheme =
     localStorage.getItem(
         "theme"
     );
-
 
 if (
     savedTheme === "dark"
@@ -1371,7 +1185,6 @@ if (
         "dark"
     );
 
-
     if (themeToggle) {
 
         themeToggle.innerHTML =
@@ -1379,8 +1192,14 @@ if (
 
     }
 
-}
+    if (themeToggleDesktop) {
 
+        themeToggleDesktop.innerHTML =
+            "☀️";
+
+    }
+
+}
 else {
 
     if (themeToggle) {
@@ -1390,8 +1209,14 @@ else {
 
     }
 
-}
+    if (themeToggleDesktop) {
 
+        themeToggleDesktop.innerHTML =
+            "🌙";
+
+    }
+
+}
 
 // =========================
 // CLOSE MENU AFTER CLICK
@@ -1413,7 +1238,6 @@ document
 
                 }
 
-
                 if (overlay) {
 
                     overlay.classList.remove(
@@ -1421,7 +1245,6 @@ document
                     );
 
                 }
-
 
                 if (hamburger) {
 
@@ -1436,35 +1259,27 @@ document
 
     });
 
-
 document.addEventListener(
     "click",
     e => {
 
         if (
-
             nav &&
-
             hamburger &&
-
             nav.classList.contains(
                 "active"
             ) &&
-
             !nav.contains(
                 e.target
             ) &&
-
             !hamburger.contains(
                 e.target
             )
-
         ) {
 
             nav.classList.remove(
                 "active"
             );
-
 
             hamburger.classList.remove(
                 "active"
@@ -1474,7 +1289,6 @@ document.addEventListener(
 
     }
 );
-
 
 // =========================
 // HEADER SHADOW ON SCROLL
@@ -1489,9 +1303,7 @@ window.addEventListener(
                 ".header"
             );
 
-
         if (!header) return;
-
 
         if (
             window.scrollY > 20
@@ -1501,7 +1313,6 @@ window.addEventListener(
                 "0 5px 20px rgba(0,0,0,0.1)";
 
         }
-
         else {
 
             header.style.boxShadow =
@@ -1511,7 +1322,6 @@ window.addEventListener(
 
     }
 );
-
 
 // =========================
 // BACK TO TOP
@@ -1525,7 +1335,6 @@ document.addEventListener(
             document.getElementById(
                 "backToTop"
             );
-
 
         if (backToTop) {
 
@@ -1542,7 +1351,6 @@ document.addEventListener(
                         );
 
                     }
-
                     else {
 
                         backToTop.classList.remove(
@@ -1554,17 +1362,13 @@ document.addEventListener(
                 }
             );
 
-
             backToTop.addEventListener(
                 "click",
                 () => {
 
                     window.scrollTo({
-
                         top: 0,
-
                         behavior: "smooth"
-
                     });
 
                 }
@@ -1572,76 +1376,8 @@ document.addEventListener(
 
         }
 
-
-        // =========================
-        // CARD ANIMATION
-        // =========================
-
-        const cards =
-            document.querySelectorAll(
-                ".file-card"
-            );
-
-
-        if (cards.length > 0) {
-
-            cards.forEach(card => {
-
-                card.classList.add(
-                    "hidden"
-                );
-
-            });
-
-
-            const observer =
-                new IntersectionObserver(
-
-                    entries => {
-
-                        entries.forEach(
-                            entry => {
-
-                                if (
-                                    entry.isIntersecting
-                                ) {
-
-                                    entry.target.classList.add(
-                                        "show"
-                                    );
-
-
-                                    entry.target.classList.remove(
-                                        "hidden"
-                                    );
-
-                                }
-
-                            }
-                        );
-
-                    },
-
-                    {
-                        threshold: 0.15
-                    }
-
-                );
-
-
-            cards.forEach(card => {
-
-                observer.observe(
-                    card
-                );
-
-            });
-
-        }
-
     }
 );
-
 
 // =========================
 // LOADING SCREEN
@@ -1650,7 +1386,6 @@ document.addEventListener(
 document.body.classList.add(
     "loading"
 );
-
 
 window.addEventListener(
     "load",
@@ -1661,7 +1396,6 @@ window.addEventListener(
                 "loader"
             );
 
-
         if (!loader) {
 
             document.body.classList.remove(
@@ -1669,9 +1403,7 @@ window.addEventListener(
             );
 
             return;
-
         }
-
 
         setTimeout(
             () => {
@@ -1679,7 +1411,6 @@ window.addEventListener(
                 loader.classList.add(
                     "hide"
                 );
-
 
                 document.body.classList.remove(
                     "loading"
@@ -1692,7 +1423,6 @@ window.addEventListener(
     }
 );
 
-
 // =========================
 // CLOSE PREVIEW MODAL
 // =========================
@@ -1701,11 +1431,9 @@ function closePreviewModal() {
 
     if (!previewModal) return;
 
-
     previewModal.classList.remove(
         "show"
     );
-
 
     if (previewContent) {
 
@@ -1714,15 +1442,12 @@ function closePreviewModal() {
                 "video, audio"
             );
 
-
         if (media) {
 
             media.pause();
-
             media.currentTime = 0;
 
         }
-
 
         setTimeout(
             () => {
@@ -1738,7 +1463,6 @@ function closePreviewModal() {
 
 }
 
-
 // =========================
 // CLOSE PREVIEW
 // =========================
@@ -1751,7 +1475,6 @@ if (closePreview) {
     );
 
 }
-
 
 if (previewModal) {
 
@@ -1773,7 +1496,6 @@ if (previewModal) {
 
 }
 
-
 document.addEventListener(
     "keydown",
     e => {
@@ -1789,7 +1511,6 @@ document.addEventListener(
     }
 );
 
-
 // =========================
 // BACK BUTTON
 // =========================
@@ -1804,18 +1525,14 @@ if (backButton) {
                 history.length === 0
             ) return;
 
-
             currentFolder =
                 history.pop();
 
-
             currentPath.pop();
-
 
             renderExplorer(
                 currentFolder
             );
-
 
             updateBreadcrumb();
 
@@ -1823,3 +1540,37 @@ if (backButton) {
     );
 
 }
+
+// =========================
+// هماهنگ شدن خودکار با پنل مدیریت
+// =========================
+
+window.addEventListener(
+    "storage",
+    event => {
+
+        if (
+            event.key !==
+            ADMIN_STORAGE_KEY
+        ) {
+            return;
+        }
+
+        explorer =
+            loadExplorerData();
+
+        currentFolder =
+            explorer;
+
+        history = [];
+
+        currentPath = [];
+
+        renderExplorer(
+            currentFolder
+        );
+
+        updateBreadcrumb();
+
+    }
+);
