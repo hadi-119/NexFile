@@ -1,134 +1,247 @@
 // =========================
-// MOBILE MENU
+// NEXFILE DATA
+// اتصال سایت به اطلاعات پنل مدیریت
 // =========================
-const explorer = [
+
+const ADMIN_STORAGE_KEY = "nexfile_admin_data";
+
+// اطلاعات پیش‌فرض سایت
+const defaultExplorer = [
     {
-    id: "programming",
-    type: "folder",
-    name: " جزوات فارسی افضلی",
-
-    children: [
-
-       {
-    id: "programming",
-    type: "folder",
-    name: "جزوات دست نویس",
-
-    children: [
-        {
-        name: "1 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 1.pdf",
+        id: "programming",
+        type: "folder",
+        name: "برنامه نویسی",
+        children: [
+            {
+                id: "html",
+                type: "folder",
+                name: "HTML",
+                children: [
+                    {
+                        name: "جلسه ۱",
+                        description: "آموزش مقدماتی HTML",
+                        size: "2 MB",
+                        file: "files/html1.pdf"
+                    },
+                    {
+                        name: "جلسه ۲",
+                        description: "تگ‌های HTML",
+                        size: "3 MB",
+                        file: "files/html2.pdf"
+                    },
+                    {
+                        name: "پروژه HTML",
+                        description: "پروژه نهایی",
+                        size: "5 MB",
+                        file: "files/project.zip"
+                    }
+                ]
+            },
+            {
+                id: "css",
+                type: "folder",
+                name: "CSS",
+                children: []
+            },
+            {
+                id: "javascript",
+                type: "folder",
+                name: "JavaScript",
+                children: []
+            },
+            {
+                id: "python",
+                type: "folder",
+                name: "Python",
+                children: []
+            }
+        ]
     },
-
     {
-        name: "2 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 2.pdf",
+        id: "design",
+        type: "folder",
+        name: "طراحی",
+        children: []
     },
-
     {
-        name: "3 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 3.pdf",
+        id: "books",
+        type: "folder",
+        name: "کتاب ها",
+        children: []
     },
-
     {
-        name: "4 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 4.pdf",
+        id: "software",
+        type: "folder",
+        name: "نرم افزارها",
+        children: []
     },
-
     {
-        name: "5 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 5.pdf",
-    },
-
-    {
-        name: "6 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 6 (2).pdf",
-    },
-
-    {
-        name: "7 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 7.pdf",
-    },
-
-    {
-        name: "8 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 8.pdf",
-    },
-
-    {
-        name: "9 جلسه  ",
-        description: "",
-        size: "",
-        file: "دست نویس 9.pdf",
-    },
-    ]   
-       },
-
-{
-    id: "books",
-    type: "folder",
-    name: "جزوات خام",
-
-    children: [
-        {
-        name: " جزوه دستور  ",
-        description: "",
-        size: "",
-        file: "جزوهٔ جمع_بندی دستور زبان ۱۱.pdf ",
-    },
-
-    {
-        name: "  جزوه آرایه ",
-        description: "",
-        size: "",
-        file: "جمع بندی آرایه.pdf ",
-    },
-
-    {
-        name: " جزوه مفهوم و درک مطلب  ",
-        description: "",
-        size: "",
-        file: "درک مطلب و مفهوم 11، نیم سال اول.pdf ",
-    },
-
-    {
-        name: " جزوه تاریخ ادبیات  ",
-        description: "",
-        size: "",
-        file: "tarikhadabiat ghalebha p11.pdf ",
-    },
-
-    {
-        name: " جزوه املا  ",
-        description: "",
-        size: "",
-        file: "املا فارسی یازدهم.pdf ",
-    },
-    ]   
-       }
-        
-        
-    ]
-},
-
-     
+        id: "projects",
+        type: "folder",
+        name: "پروژه ها",
+        children: []
+    }
 ];
+
+
+// =========================
+// تبدیل اطلاعات پنل مدیریت
+// به ساختار explorer سایت
+// =========================
+
+function convertAdminDataToExplorer(data) {
+
+    if (
+        !data ||
+        !Array.isArray(data.folders) ||
+        !Array.isArray(data.files)
+    ) {
+        return null;
+    }
+
+    function buildFolder(folderId) {
+
+        const folder = data.folders.find(
+            item => item.id === folderId
+        );
+
+        if (!folder) return null;
+
+        const children = [];
+
+        // پوشه‌های داخل این پوشه
+        data.folders
+            .filter(item => item.parent === folderId)
+            .forEach(childFolder => {
+
+                const convertedFolder =
+                    buildFolder(childFolder.id);
+
+                if (convertedFolder) {
+                    children.push(convertedFolder);
+                }
+
+            });
+
+
+        // فایل‌های داخل این پوشه
+        data.files
+            .filter(file => file.folderId === folderId)
+            .forEach(file => {
+
+                children.push({
+
+                    name: file.name || "فایل بدون نام",
+
+                    description:
+                        file.description || "",
+
+                    size:
+                        file.size || "",
+
+                    // مسیر واقعی فایل
+                    // پنل مدیریت مسیر را در path ذخیره می‌کند
+                    file:
+                        file.path ||
+                        file.file ||
+                        ""
+
+                });
+
+            });
+
+
+        return {
+
+            id: folder.id,
+
+            type: "folder",
+
+            name: folder.name,
+
+            children: children
+
+        };
+    }
+
+
+    // فقط پوشه‌های اصلی
+    const rootFolders =
+        data.folders.filter(
+            folder =>
+                folder.parent === null ||
+                folder.parent === undefined ||
+                folder.parent === ""
+        );
+
+
+    return rootFolders
+        .map(folder => buildFolder(folder.id))
+        .filter(Boolean);
+}
+
+
+// =========================
+// دریافت اطلاعات از پنل
+// =========================
+
+function loadExplorerData() {
+
+    try {
+
+        const savedData =
+            localStorage.getItem(
+                ADMIN_STORAGE_KEY
+            );
+
+
+        if (!savedData) {
+
+            return defaultExplorer;
+
+        }
+
+
+        const data =
+            JSON.parse(savedData);
+
+
+        const convertedData =
+            convertAdminDataToExplorer(data);
+
+
+        if (
+            Array.isArray(convertedData) &&
+            convertedData.length > 0
+        ) {
+
+            return convertedData;
+
+        }
+
+    }
+    catch (error) {
+
+        console.warn(
+            "خطا در خواندن اطلاعات پنل مدیریت:",
+            error
+        );
+
+    }
+
+
+    return defaultExplorer;
+}
+
+
+// اطلاعات نهایی سایت
+const explorer =
+    loadExplorerData();
+
+
+// =========================
+// FOLDER FUNCTIONS
+// =========================
 
 function getAllFiles(items, path = []) {
 
@@ -145,11 +258,15 @@ function getAllFiles(items, path = []) {
                 )
             );
 
-        } else {
+        }
+        else {
 
             result.push({
+
                 ...item,
+
                 path: [...path]
+
             });
 
         }
@@ -157,193 +274,412 @@ function getAllFiles(items, path = []) {
     });
 
     return result;
-
 }
+
+
 
 function findFolderByPath(items, path) {
 
     let current = items;
 
+
     for (const name of path) {
 
-        const folder = current.find(item =>
-            item.type === "folder" && item.name === name
-        );
+        const folder =
+            current.find(item =>
+                item.type === "folder" &&
+                item.name === name
+            );
+
 
         if (!folder) return null;
 
-        current = folder.children;
+
+        current =
+            folder.children;
 
     }
 
-    return current;
 
+    return current;
 }
 
-function openFolderByPath(path){
+
+
+function openFolderByPath(path) {
 
     history = [];
 
+
     let current = explorer;
+
 
     path.forEach(name => {
 
         history.push([...current]);
 
-        const folder = current.find(item =>
-            item.type === "folder" && item.name === name
-        );
 
-        if(!folder) return;
+        const folder =
+            current.find(item =>
+                item.type === "folder" &&
+                item.name === name
+            );
 
-        current = folder.children;
+
+        if (!folder) return;
+
+
+        current =
+            folder.children;
 
     });
 
-    currentFolder = current;
 
-currentPath = [...path];
+    currentFolder =
+        current;
 
-updateBreadcrumb();
 
-renderExplorer(currentFolder);
+    currentPath =
+        [...path];
 
+
+    updateBreadcrumb();
+
+
+    renderExplorer(
+        currentFolder
+    );
 }
+
+
+// =========================
+// BREADCRUMB
+// =========================
 
 function updateBreadcrumb() {
 
-    const breadcrumb = document.getElementById("breadcrumb");
+    const breadcrumb =
+        document.getElementById(
+            "breadcrumb"
+        );
+
 
     if (!breadcrumb) return;
 
+
     breadcrumb.innerHTML = "";
 
+
     // خانه
-    const home = document.createElement("a");
-    home.textContent = "خانه";
-    home.href = "#";
-    home.addEventListener("click", e => {
-        e.preventDefault();
-        openFolderByPath([]);
-    });
+    const home =
+        document.createElement("a");
+
+
+    home.textContent =
+        "خانه";
+
+
+    home.href =
+        "#";
+
+
+    home.addEventListener(
+        "click",
+        e => {
+
+            e.preventDefault();
+
+            openFolderByPath([]);
+
+        }
+    );
+
 
     breadcrumb.appendChild(home);
 
-    currentPath.forEach((name, index) => {
 
-        const separator = document.createElement("span");
-        separator.textContent = " > ";
-        breadcrumb.appendChild(separator);
+    currentPath.forEach(
+        (name, index) => {
 
-        if (index === currentPath.length - 1) {
+            const separator =
+                document.createElement(
+                    "span"
+                );
 
-            const span = document.createElement("span");
-            span.textContent = name;
-            breadcrumb.appendChild(span);
 
-        } else {
+            separator.textContent =
+                " > ";
 
-            const link = document.createElement("a");
-            link.href = "#";
-            link.textContent = name;
 
-            link.addEventListener("click", e => {
+            breadcrumb.appendChild(
+                separator
+            );
 
-                e.preventDefault();
 
-                openFolderByPath(currentPath.slice(0, index + 1));
+            if (
+                index ===
+                currentPath.length - 1
+            ) {
 
-            });
+                const span =
+                    document.createElement(
+                        "span"
+                    );
 
-            breadcrumb.appendChild(link);
+
+                span.textContent =
+                    name;
+
+
+                breadcrumb.appendChild(
+                    span
+                );
+
+            }
+            else {
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                link.href =
+                    "#";
+
+
+                link.textContent =
+                    name;
+
+
+                link.addEventListener(
+                    "click",
+                    e => {
+
+                        e.preventDefault();
+
+
+                        openFolderByPath(
+                            currentPath.slice(
+                                0,
+                                index + 1
+                            )
+                        );
+
+                    }
+                );
+
+
+                breadcrumb.appendChild(
+                    link
+                );
+
+            }
 
         }
-
-    });
-
+    );
 }
 
-let currentFolder = explorer;
+
+// =========================
+// GLOBAL VARIABLES
+// =========================
+
+let currentFolder =
+    explorer;
+
 
 let history = [];
 
+
 let currentPath = [];
 
-const filesGrid = document.getElementById("filesGrid");
-const backButton = document.getElementById("backButton");
-const previewModal = document.getElementById("previewModal");
-const previewContent = document.getElementById("previewContent");
-const previewTitle = document.getElementById("previewTitle");
-const previewDownload = document.getElementById("previewDownload");
-const closePreview = document.getElementById("closePreview");
 
-function openPreview(file){
+const filesGrid =
+    document.getElementById(
+        "filesGrid"
+    );
 
-    previewTitle.textContent = file.name;
 
-    previewDownload.href = file.file;
+const backButton =
+    document.getElementById(
+        "backButton"
+    );
 
-    previewContent.innerHTML = "";
 
-    const extension = file.file.split(".").pop().toLowerCase();
+const previewModal =
+    document.getElementById(
+        "previewModal"
+    );
 
-    if(["jpg","jpeg","png","gif","webp"].includes(extension)){
+
+const previewContent =
+    document.getElementById(
+        "previewContent"
+    );
+
+
+const previewTitle =
+    document.getElementById(
+        "previewTitle"
+    );
+
+
+const previewDownload =
+    document.getElementById(
+        "previewDownload"
+    );
+
+
+const closePreview =
+    document.getElementById(
+        "closePreview"
+    );
+
+
+// =========================
+// PREVIEW
+// =========================
+
+function openPreview(file) {
+
+    previewTitle.textContent =
+        file.name;
+
+
+    previewDownload.href =
+        file.file;
+
+
+    previewContent.innerHTML =
+        "";
+
+
+    const extension =
+        file.file
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+    if (
+        [
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "webp"
+        ].includes(extension)
+    ) {
 
         previewContent.innerHTML = `
-            <img src="${file.file}" alt="${file.name}">
+
+            <img
+                src="${file.file}"
+                alt="${file.name}"
+            >
+
         `;
 
     }
-    else if(extension === "pdf"){
+
+    else if (
+        extension === "pdf"
+    ) {
 
         previewContent.innerHTML = `
-            <iframe src="${file.file}"></iframe>
+
+            <iframe
+                src="${file.file}">
+            </iframe>
+
         `;
 
     }
-    else if(["mp4","webm","ogg"].includes(extension)){
+
+    else if (
+        [
+            "mp4",
+            "webm",
+            "ogg"
+        ].includes(extension)
+    ) {
 
         previewContent.innerHTML = `
+
             <video controls>
-                <source src="${file.file}">
+
+                <source
+                    src="${file.file}"
+                >
+
             </video>
+
         `;
 
     }
-    else if(["mp3","wav"].includes(extension)){
+
+    else if (
+        [
+            "mp3",
+            "wav"
+        ].includes(extension)
+    ) {
 
         previewContent.innerHTML = `
+
             <audio controls>
-                <source src="${file.file}">
+
+                <source
+                    src="${file.file}"
+                >
+
             </audio>
+
         `;
 
     }
-    else{
+
+    else {
 
         previewContent.innerHTML = `
-            <p>پیش‌نمایش این فایل امکان‌پذیر نیست.</p>
+
+            <p>
+                پیش‌نمایش این فایل امکان‌پذیر نیست.
+            </p>
+
         `;
 
     }
 
-    previewModal.classList.add("show");
 
+    previewModal.classList.add(
+        "show"
+    );
 }
 
-function renderExplorer(items){
 
-    if(history.length > 0){
+// =========================
+// RENDER EXPLORER
+// =========================
 
-    backButton.style.display = "inline-block";
+function renderExplorer(items) {
 
-}else{
+    if (history.length > 0) {
 
-    backButton.style.display = "none";
+        backButton.style.display =
+            "inline-block";
 
-}
+    }
+    else {
 
-    if(items.length === 0){
+        backButton.style.display =
+            "none";
+
+    }
+
+
+    if (items.length === 0) {
 
         renderFiles([]);
 
@@ -351,7 +687,10 @@ function renderExplorer(items){
 
     }
 
-    if(items[0].type === "folder"){
+
+    if (
+        items[0].type === "folder"
+    ) {
 
         renderFolders(items);
 
@@ -359,26 +698,41 @@ function renderExplorer(items){
 
     }
 
-    renderFiles(items);
 
+    renderFiles(items);
 }
 
-function renderFolders(folderList){
 
-    filesGrid.innerHTML = "";
+// =========================
+// RENDER FOLDERS
+// =========================
+
+function renderFolders(folderList) {
+
+    filesGrid.innerHTML =
+        "";
+
 
     folderList.forEach(folder => {
 
         filesGrid.innerHTML += `
 
-            <div class="file-card folder-card" data-id="${folder.id}">
+            <div
+                class="file-card folder-card"
+                data-id="${folder.id}"
+            >
 
                 <h3 class="file-name">
+
                     📁 ${folder.name}
+
                 </h3>
 
+
                 <p class="file-description">
+
                     پوشه
+
                 </p>
 
             </div>
@@ -387,298 +741,653 @@ function renderFolders(folderList){
 
     });
 
-    document.querySelectorAll(".folder-card").forEach(card => {
 
-    card.addEventListener("click", () => {
+    document
+        .querySelectorAll(
+            ".folder-card"
+        )
+        .forEach(card => {
 
-        const folder = folderList.find(item => item.id === card.dataset.id);
+            card.addEventListener(
+                "click",
+                () => {
 
-        if(!folder) return;
+                    const folder =
+                        folderList.find(
+                            item =>
+                                item.id ===
+                                card.dataset.id
+                        );
 
-        
 
-history.push([...currentFolder]);
+                    if (!folder) return;
 
-currentPath.push(folder.name);
 
-currentFolder = folder.children;
+                    history.push(
+                        [...currentFolder]
+                    );
 
-updateBreadcrumb();
 
-if(currentFolder.length === 0){
+                    currentPath.push(
+                        folder.name
+                    );
 
-    renderExplorer([]);
 
-    return;
+                    currentFolder =
+                        folder.children;
 
+
+                    updateBreadcrumb();
+
+
+                    if (
+                        currentFolder.length ===
+                        0
+                    ) {
+
+                        renderExplorer([]);
+
+                        return;
+
+                    }
+
+
+                    renderExplorer(
+                        currentFolder
+                    );
+
+                }
+            );
+
+        });
 }
 
-renderExplorer(currentFolder);
 
-    });
+// =========================
+// RENDER FILES
+// =========================
 
-});
+function renderFiles(items) {
 
-}
+    if (!filesGrid) return;
 
-function renderFiles(items){
 
-    if(!filesGrid) return;
+    filesGrid.innerHTML =
+        "";
 
-    filesGrid.innerHTML = "";
-    const currentFiles = items;
-    if(items.length === 0){
 
-    filesGrid.innerHTML = `
-        <div class="empty-search">
+    const currentFiles =
+        items;
 
-            <h3>فایلی پیدا نشد 😕</h3>
 
-        </div>
-    `;
+    if (items.length === 0) {
 
-    return;
+        filesGrid.innerHTML = `
 
-}
+            <div class="empty-search">
+
+                <h3>
+
+                    فایلی پیدا نشد 😕
+
+                </h3>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
 
     items.forEach(file => {
 
         filesGrid.innerHTML += `
+
             <div class="file-card">
 
                 <h3 class="file-name">
+
                     ${file.name}
+
                 </h3>
 
+
                 <p class="file-description">
-                    ${file.description}
+
+                    ${file.description || ""}
+
                 </p>
 
-                <span class="file-size">
-                    حجم: ${file.size}
-                </span>
+
+                ${
+                    file.size
+                    ?
+                    `
+
+                    <span class="file-size">
+
+                        حجم: ${file.size}
+
+                    </span>
+
+                    `
+                    :
+                    ""
+                }
+
 
                 <div class="file-buttons">
 
                     ${
-                        file.file.endsWith(".zip")
-                        ?
-                        `
-                        <a href="${file.file}"
-                           download
-                           class="download-btn full-width">
-                           دانلود
-                        </a>
-                        `
-                        :
-                        `
-                    ${
-    file.path
-    ?
-    `
-    <button
-        class="goto-folder-btn"
-        data-path="${file.path.join("|")}">
-        📂 برو به پوشه
-    </button>
-    `
-    :
-    ""
-}
-                        <button
-    class="view-btn preview-btn"
-    data-file="${file.name}">
-    نمایش
-</button>
+                        file.file &&
+                        file.file
+                            .toLowerCase()
+                            .endsWith(".zip")
 
-                        <a href="${file.file}"
-                           download
-                           class="download-btn">
-                           دانلود
-                        </a>
+                        ?
+
                         `
+
+                        <a
+                            href="${file.file}"
+                            download
+                            class="download-btn full-width"
+                        >
+
+                            دانلود
+
+                        </a>
+
+                        `
+
+                        :
+
+                        `
+
+                        ${
+                            file.path
+
+                            ?
+
+                            `
+
+                            <button
+                                class="goto-folder-btn"
+                                data-path="${file.path.join("|")}"
+                            >
+
+                                📂 برو به پوشه
+
+                            </button>
+
+                            `
+
+                            :
+
+                            ""
+
+                        }
+
+
+                        <button
+                            class="view-btn preview-btn"
+                            data-file="${file.name}"
+                        >
+
+                            نمایش
+
+                        </button>
+
+
+                        <a
+                            href="${file.file}"
+                            download
+                            class="download-btn"
+                        >
+
+                            دانلود
+
+                        </a>
+
+                        `
+
                     }
 
                 </div>
 
             </div>
+
         `;
 
     });
 
-    document.querySelectorAll(".goto-folder-btn").forEach(button => {
 
-    button.addEventListener("click", () => {
+    // =========================
+    // GO TO FOLDER
+    // =========================
 
-        const path = button.dataset.path.split("|");
+    document
+        .querySelectorAll(
+            ".goto-folder-btn"
+        )
+        .forEach(button => {
 
-        const folder = findFolderByPath(explorer, path);
+            button.addEventListener(
+                "click",
+                () => {
 
-        if (!folder) return;
+                    const path =
+                        button.dataset.path
+                            .split("|");
 
-       openFolderByPath(path);
 
-searchInput.value = "";
+                    const folder =
+                        findFolderByPath(
+                            explorer,
+                            path
+                        );
 
-clearSearch.classList.remove("show");
-searchInput.blur();
 
-    });
+                    if (!folder) return;
 
-});
 
-document.querySelectorAll(".preview-btn").forEach(button => {
+                    openFolderByPath(
+                        path
+                    );
 
-    button.addEventListener("click", () => {
 
-        const file = currentFiles.find(item => item.name === button.dataset.file);
+                    if (searchInput) {
 
-        if(file){
+                        searchInput.value =
+                            "";
 
-            openPreview(file);
+                    }
 
-        }
 
-    });
+                    if (clearSearch) {
 
-});
+                        clearSearch.classList.remove(
+                            "show"
+                        );
+
+                    }
+
+
+                    if (searchInput) {
+
+                        searchInput.blur();
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    // =========================
+    // PREVIEW BUTTON
+    // =========================
+
+    document
+        .querySelectorAll(
+            ".preview-btn"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const file =
+                        currentFiles.find(
+                            item =>
+                                item.name ===
+                                button.dataset.file
+                        );
+
+
+                    if (file) {
+
+                        openPreview(file);
+
+                    }
+
+                }
+            );
+
+        });
 
 }
 
-renderExplorer(currentFolder);
+
+// =========================
+// FIRST RENDER
+// =========================
+
+renderExplorer(
+    currentFolder
+);
+
 
 // =========================
 // LIVE SEARCH
 // =========================
 
-const searchInput = document.getElementById("searchInput");
-const clearSearch = document.getElementById("clearSearch");
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
 
-if(searchInput){
 
-    searchInput.addEventListener("input", () => {
+const clearSearch =
+    document.getElementById(
+        "clearSearch"
+    );
 
-        const value = searchInput.value.trim().toLowerCase();
-        clearSearch.classList.toggle("show", value !== "");
 
-        const allFiles = getAllFiles(explorer);
+if (searchInput) {
 
-const filteredFiles = allFiles.filter(file => {
+    searchInput.addEventListener(
+        "input",
+        () => {
 
-            return (
-                file.name.toLowerCase().includes(value) ||
-                file.description.toLowerCase().includes(value)
+            const value =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+
+
+            if (clearSearch) {
+
+                clearSearch.classList.toggle(
+                    "show",
+                    value !== ""
+                );
+
+            }
+
+
+            const allFiles =
+                getAllFiles(
+                    explorer
+                );
+
+
+            const filteredFiles =
+                allFiles.filter(file => {
+
+                    return (
+
+                        file.name
+                            .toLowerCase()
+                            .includes(value)
+
+                        ||
+
+                        (
+                            file.description ||
+                            ""
+                        )
+                            .toLowerCase()
+                            .includes(value)
+
+                    );
+
+                });
+
+
+            if (value === "") {
+
+                renderExplorer(
+                    currentFolder
+                );
+
+                return;
+
+            }
+
+
+            renderFiles(
+                filteredFiles
             );
 
-        });
+        }
+    );
 
-        if (value === "") {
 
-    renderExplorer(currentFolder);
+    if (clearSearch) {
 
-    return;
+        clearSearch.addEventListener(
+            "click",
+            () => {
+
+                searchInput.value =
+                    "";
+
+
+                renderExplorer(
+                    currentFolder
+                );
+
+
+                clearSearch.classList.remove(
+                    "show"
+                );
+
+
+                searchInput.focus();
+
+            }
+        );
+
+    }
 
 }
 
-        renderFiles(filteredFiles);
 
-    });
+// =========================
+// MOBILE MENU
+// =========================
 
-    if(clearSearch){
+const hamburger =
+    document.getElementById(
+        "hamburger"
+    );
 
-    clearSearch.addEventListener("click", () => {
 
-        searchInput.value = "";
+const nav =
+    document.getElementById(
+        "nav"
+    );
 
-        renderExplorer(currentFolder);
 
-        clearSearch.classList.remove("show");
+const overlay =
+    document.getElementById(
+        "menuOverlay"
+    );
 
-        searchInput.focus();
 
-    });
+if (hamburger) {
+
+    hamburger.addEventListener(
+        "click",
+        () => {
+
+            nav.classList.toggle(
+                "active"
+            );
+
+
+            hamburger.classList.toggle(
+                "active"
+            );
+
+        }
+    );
 
 }
 
+
+if (overlay) {
+
+    overlay.addEventListener(
+        "click",
+        () => {
+
+            nav.classList.remove(
+                "active"
+            );
+
+
+            overlay.classList.remove(
+                "active"
+            );
+
+
+            hamburger.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
 }
 
-const hamburger = document.getElementById("hamburger");
-const nav = document.getElementById("nav");
-const overlay = document.getElementById("menuOverlay");
-
-hamburger.addEventListener("click", () => {
-
-    nav.classList.toggle("active");
-    hamburger.classList.toggle("active");
-
-});
-overlay.addEventListener("click", () => {
-
-    nav.classList.remove("active");
-    overlay.classList.remove("active");
-    hamburger.classList.remove("active");
-
-});
 
 // =========================
 // DARK MODE
 // =========================
 
-const themeToggle = document.getElementById("themeToggle");
-const themeToggleDesktop = document.getElementById("themeToggleDesktop");
-function toggleTheme(){
+const themeToggle =
+    document.getElementById(
+        "themeToggle"
+    );
 
-    document.body.classList.toggle("dark");
 
-    if(document.body.classList.contains("dark")){
+const themeToggleDesktop =
+    document.getElementById(
+        "themeToggleDesktop"
+    );
 
-        localStorage.setItem("theme","dark");
 
-        if(themeToggle){
-            themeToggle.innerHTML = "☀️ حالت روشن";
+function toggleTheme() {
+
+    document.body.classList.toggle(
+        "dark"
+    );
+
+
+    if (
+        document.body.classList.contains(
+            "dark"
+        )
+    ) {
+
+        localStorage.setItem(
+            "theme",
+            "dark"
+        );
+
+
+        if (themeToggle) {
+
+            themeToggle.innerHTML =
+                "☀️ حالت روشن";
+
         }
 
-        if(themeToggleDesktop){
-            themeToggleDesktop.innerHTML = "☀️";
-        }
 
-    }else{
+        if (themeToggleDesktop) {
 
-        localStorage.setItem("theme","light");
+            themeToggleDesktop.innerHTML =
+                "☀️";
 
-        if(themeToggle){
-            themeToggle.innerHTML = "🌙 حالت تیره";
-        }
-
-        if(themeToggleDesktop){
-            themeToggleDesktop.innerHTML = "🌙";
         }
 
     }
-}
 
-if(themeToggle){
-    themeToggle.addEventListener("click", toggleTheme);
-}
+    else {
 
-if(themeToggleDesktop){
-    themeToggleDesktop.addEventListener("click", toggleTheme);
-}
+        localStorage.setItem(
+            "theme",
+            "light"
+        );
 
-const savedTheme = localStorage.getItem("theme");
 
-if (savedTheme === "dark") {
+        if (themeToggle) {
 
-    document.body.classList.add("dark");
+            themeToggle.innerHTML =
+                "🌙 حالت تیره";
 
-    if(themeToggle){
-        themeToggle.innerHTML = "☀️ حالت روشن";
+        }
+
+
+        if (themeToggleDesktop) {
+
+            themeToggleDesktop.innerHTML =
+                "🌙";
+
+        }
+
     }
 
-} else {
+}
 
-    if(themeToggle){
-        themeToggle.innerHTML = "🌙 حالت تیره";
+
+if (themeToggle) {
+
+    themeToggle.addEventListener(
+        "click",
+        toggleTheme
+    );
+
+}
+
+
+if (themeToggleDesktop) {
+
+    themeToggleDesktop.addEventListener(
+        "click",
+        toggleTheme
+    );
+
+}
+
+
+const savedTheme =
+    localStorage.getItem(
+        "theme"
+    );
+
+
+if (
+    savedTheme === "dark"
+) {
+
+    document.body.classList.add(
+        "dark"
+    );
+
+
+    if (themeToggle) {
+
+        themeToggle.innerHTML =
+            "☀️ حالت روشن";
+
+    }
+
+}
+
+else {
+
+    if (themeToggle) {
+
+        themeToggle.innerHTML =
+            "🌙 حالت تیره";
+
     }
 
 }
@@ -688,191 +1397,429 @@ if (savedTheme === "dark") {
 // CLOSE MENU AFTER CLICK
 // =========================
 
-document.querySelectorAll(".nav a").forEach(link => {
+document
+    .querySelectorAll(".nav a")
+    .forEach(link => {
 
-    link.addEventListener("click", () => {
+        link.addEventListener(
+            "click",
+            () => {
 
-        nav.classList.remove("active");
-        overlay.classList.remove("active");
-        hamburger.classList.remove("active");
+                if (nav) {
+
+                    nav.classList.remove(
+                        "active"
+                    );
+
+                }
+
+
+                if (overlay) {
+
+                    overlay.classList.remove(
+                        "active"
+                    );
+
+                }
+
+
+                if (hamburger) {
+
+                    hamburger.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
 
     });
 
-});
 
-document.addEventListener("click", (e) => {
+document.addEventListener(
+    "click",
+    e => {
 
-    if(
-        nav.classList.contains("active") &&
-        !nav.contains(e.target) &&
-        !hamburger.contains(e.target)
-    ){
-        nav.classList.remove("active");
-        hamburger.classList.remove("active");
+        if (
+
+            nav &&
+
+            hamburger &&
+
+            nav.classList.contains(
+                "active"
+            ) &&
+
+            !nav.contains(
+                e.target
+            ) &&
+
+            !hamburger.contains(
+                e.target
+            )
+
+        ) {
+
+            nav.classList.remove(
+                "active"
+            );
+
+
+            hamburger.classList.remove(
+                "active"
+            );
+
+        }
+
     }
+);
 
-});
 
 // =========================
 // HEADER SHADOW ON SCROLL
 // =========================
 
-window.addEventListener("scroll", () => {
+window.addEventListener(
+    "scroll",
+    () => {
 
-    const header = document.querySelector(".header");
+        const header =
+            document.querySelector(
+                ".header"
+            );
 
-    if (window.scrollY > 20) {
-        header.style.boxShadow = "0 5px 20px rgba(0,0,0,0.1)";
-    } else {
-        header.style.boxShadow = "none";
+
+        if (!header) return;
+
+
+        if (
+            window.scrollY > 20
+        ) {
+
+            header.style.boxShadow =
+                "0 5px 20px rgba(0,0,0,0.1)";
+
+        }
+
+        else {
+
+            header.style.boxShadow =
+                "none";
+
+        }
+
     }
+);
 
-});
 
 // =========================
 // BACK TO TOP
 // =========================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    const backToTop = document.getElementById("backToTop");
+        const backToTop =
+            document.getElementById(
+                "backToTop"
+            );
 
-    if (backToTop) {
 
-        window.addEventListener("scroll", () => {
+        if (backToTop) {
 
-            if (window.scrollY > 300) {
-                backToTop.classList.add("show");
-            } else {
-                backToTop.classList.remove("show");
-            }
+            window.addEventListener(
+                "scroll",
+                () => {
 
-        });
+                    if (
+                        window.scrollY > 300
+                    ) {
 
-        backToTop.addEventListener("click", () => {
+                        backToTop.classList.add(
+                            "show"
+                        );
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+                    }
 
-        });
+                    else {
 
-    }
+                        backToTop.classList.remove(
+                            "show"
+                        );
 
-    // =========================
-    // CARD ANIMATION
-    // =========================
-
-    const cards = document.querySelectorAll(".file-card");
-
-    if (cards.length > 0) {
-
-        cards.forEach(card => {
-            card.classList.add("hidden");
-        });
-
-        const observer = new IntersectionObserver((entries) => {
-
-            entries.forEach(entry => {
-
-                if (entry.isIntersecting) {
-
-                    entry.target.classList.add("show");
-                    entry.target.classList.remove("hidden");
+                    }
 
                 }
+            );
+
+
+            backToTop.addEventListener(
+                "click",
+                () => {
+
+                    window.scrollTo({
+
+                        top: 0,
+
+                        behavior: "smooth"
+
+                    });
+
+                }
+            );
+
+        }
+
+
+        // =========================
+        // CARD ANIMATION
+        // =========================
+
+        const cards =
+            document.querySelectorAll(
+                ".file-card"
+            );
+
+
+        if (cards.length > 0) {
+
+            cards.forEach(card => {
+
+                card.classList.add(
+                    "hidden"
+                );
 
             });
 
-        }, {
-            threshold: 0.15
-        });
 
-        cards.forEach(card => {
-            observer.observe(card);
-        });
+            const observer =
+                new IntersectionObserver(
+
+                    entries => {
+
+                        entries.forEach(
+                            entry => {
+
+                                if (
+                                    entry.isIntersecting
+                                ) {
+
+                                    entry.target.classList.add(
+                                        "show"
+                                    );
+
+
+                                    entry.target.classList.remove(
+                                        "hidden"
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    },
+
+                    {
+                        threshold: 0.15
+                    }
+
+                );
+
+
+            cards.forEach(card => {
+
+                observer.observe(
+                    card
+                );
+
+            });
+
+        }
 
     }
+);
 
-});
 
 // =========================
 // LOADING SCREEN
 // =========================
 
-document.body.classList.add("loading");
+document.body.classList.add(
+    "loading"
+);
 
-window.addEventListener("load", () => {
 
-    const loader = document.getElementById("loader");
+window.addEventListener(
+    "load",
+    () => {
 
-    setTimeout(() => {
+        const loader =
+            document.getElementById(
+                "loader"
+            );
 
-        loader.classList.add("hide");
-        document.body.classList.remove("loading");
 
-    }, 700);
+        if (!loader) {
 
-});
+            document.body.classList.remove(
+                "loading"
+            );
 
-function closePreviewModal(){
+            return;
 
-    previewModal.classList.remove("show");
+        }
 
-    const media = previewContent.querySelector("video, audio");
 
-    if(media){
+        setTimeout(
+            () => {
 
-        media.pause();
-        media.currentTime = 0;
+                loader.classList.add(
+                    "hide"
+                );
+
+
+                document.body.classList.remove(
+                    "loading"
+                );
+
+            },
+            700
+        );
+
+    }
+);
+
+
+// =========================
+// CLOSE PREVIEW MODAL
+// =========================
+
+function closePreviewModal() {
+
+    if (!previewModal) return;
+
+
+    previewModal.classList.remove(
+        "show"
+    );
+
+
+    if (previewContent) {
+
+        const media =
+            previewContent.querySelector(
+                "video, audio"
+            );
+
+
+        if (media) {
+
+            media.pause();
+
+            media.currentTime = 0;
+
+        }
+
+
+        setTimeout(
+            () => {
+
+                previewContent.innerHTML =
+                    "";
+
+            },
+            300
+        );
 
     }
 
-    setTimeout(() => {
-
-        previewContent.innerHTML = "";
-
-    }, 300);
-
 }
+
 
 // =========================
 // CLOSE PREVIEW
 // =========================
 
-closePreview.addEventListener("click", closePreviewModal);
+if (closePreview) {
 
-previewModal.addEventListener("click", (e) => {
-
-    if(e.target === previewModal){
-
-    closePreviewModal();
-
-}
-
-});
-
-document.addEventListener("keydown", (e) => {
-
-    if(e.key === "Escape"){
-
-    closePreviewModal();
+    closePreview.addEventListener(
+        "click",
+        closePreviewModal
+    );
 
 }
 
-});
 
-backButton.addEventListener("click", () => {
+if (previewModal) {
 
-    if (history.length === 0) return;
+    previewModal.addEventListener(
+        "click",
+        e => {
 
-    currentFolder = history.pop();
+            if (
+                e.target ===
+                previewModal
+            ) {
 
-    currentPath.pop();
+                closePreviewModal();
 
-    renderExplorer(currentFolder);
+            }
 
-    updateBreadcrumb();
+        }
+    );
 
-});
+}
+
+
+document.addEventListener(
+    "keydown",
+    e => {
+
+        if (
+            e.key === "Escape"
+        ) {
+
+            closePreviewModal();
+
+        }
+
+    }
+);
+
+
+// =========================
+// BACK BUTTON
+// =========================
+
+if (backButton) {
+
+    backButton.addEventListener(
+        "click",
+        () => {
+
+            if (
+                history.length === 0
+            ) return;
+
+
+            currentFolder =
+                history.pop();
+
+
+            currentPath.pop();
+
+
+            renderExplorer(
+                currentFolder
+            );
+
+
+            updateBreadcrumb();
+
+        }
+    );
+
+}
