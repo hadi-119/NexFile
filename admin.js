@@ -1,6 +1,6 @@
 /* =========================================================
    NexFile Admin Panel
-   Local Version - Stage 8
+   Local Version - Stage 9
 ========================================================= */
 
 
@@ -149,6 +149,8 @@ let data = loadData();
 
 let selectedFolder = null;
 
+let selectedRealFile = null;
+
 
 /* =========================
    Save Data
@@ -229,29 +231,23 @@ function syncRealNexFileData() {
     ];
 
 
-    realFolders.forEach(
-        function (realFolder) {
+    realFolders.forEach(function (realFolder) {
 
-            const exists =
-                data.folders.some(
-                    function (folder) {
+        const exists =
+            data.folders.some(function (folder) {
 
-                        return folder.id ===
-                            realFolder.id;
+                return folder.id === realFolder.id;
 
-                    }
-                );
+            });
 
-            if (!exists) {
 
-                data.folders.push(
-                    realFolder
-                );
+        if (!exists) {
 
-            }
+            data.folders.push(realFolder);
 
         }
-    );
+
+    });
 
 
     const realFiles = [
@@ -286,29 +282,23 @@ function syncRealNexFileData() {
     ];
 
 
-    realFiles.forEach(
-        function (realFile) {
+    realFiles.forEach(function (realFile) {
 
-            const exists =
-                data.files.some(
-                    function (file) {
+        const exists =
+            data.files.some(function (file) {
 
-                        return file.id ===
-                            realFile.id;
+                return file.id === realFile.id;
 
-                    }
-                );
+            });
 
-            if (!exists) {
 
-                data.files.push(
-                    realFile
-                );
+        if (!exists) {
 
-            }
+            data.files.push(realFile);
 
         }
-    );
+
+    });
 
 
     saveData();
@@ -328,40 +318,48 @@ const folderCount =
         "folderCount"
     );
 
+
 const fileCount =
     document.getElementById(
         "fileCount"
     );
+
 
 const systemStatus =
     document.getElementById(
         "systemStatus"
     );
 
+
 const folderTree =
     document.getElementById(
         "folderTree"
     );
+
 
 const fileList =
     document.getElementById(
         "fileList"
     );
 
+
 const currentPath =
     document.getElementById(
         "currentPath"
     );
+
 
 const saveChanges =
     document.getElementById(
         "saveChanges"
     );
 
+
 const saveStatus =
     document.getElementById(
         "saveStatus"
     );
+
 
 const notification =
     document.getElementById(
@@ -374,10 +372,12 @@ const addFolderBtn =
         "addFolderBtn"
     );
 
+
 const refreshFoldersBtn =
     document.getElementById(
         "refreshFoldersBtn"
     );
+
 
 const addFileBtn =
     document.getElementById(
@@ -394,6 +394,7 @@ const folderModal =
         "folderModal"
     );
 
+
 const fileModal =
     document.getElementById(
         "fileModal"
@@ -405,20 +406,24 @@ const folderName =
         "folderName"
     );
 
+
 const fileName =
     document.getElementById(
         "fileName"
     );
+
 
 const fileDescription =
     document.getElementById(
         "fileDescription"
     );
 
+
 const fileSize =
     document.getElementById(
         "fileSize"
     );
+
 
 const filePath =
     document.getElementById(
@@ -473,21 +478,23 @@ function renderFolders() {
 
 
     const rootFolders =
-        data.folders.filter(
-            function (folder) {
+        data.folders.filter(function (folder) {
 
-                return folder.parent === null;
+            return folder.parent === null;
 
-            }
-        );
+        });
 
 
     if (rootFolders.length === 0) {
 
         folderTree.innerHTML = `
+
             <div class="empty-state">
+
                 هنوز پوشه‌ای ثبت نشده است.
+
             </div>
+
         `;
 
         return;
@@ -495,16 +502,14 @@ function renderFolders() {
     }
 
 
-    rootFolders.forEach(
-        function (folder) {
+    rootFolders.forEach(function (folder) {
 
-            renderFolderItem(
-                folder,
-                0
-            );
+        renderFolderItem(
+            folder,
+            0
+        );
 
-        }
-    );
+    });
 
 }
 
@@ -555,6 +560,7 @@ function renderFolderItem(
     icon.className =
         "folder-icon";
 
+
     icon.textContent =
         "📁";
 
@@ -567,6 +573,7 @@ function renderFolderItem(
 
     name.className =
         "folder-name";
+
 
     name.textContent =
         folder.name;
@@ -600,6 +607,7 @@ function renderFolderItem(
     openButton.className =
         "folder-action";
 
+
     openButton.textContent =
         "باز کردن";
 
@@ -626,6 +634,7 @@ function renderFolderItem(
 
     editButton.className =
         "folder-action";
+
 
     editButton.textContent =
         "ویرایش";
@@ -654,6 +663,7 @@ function renderFolderItem(
     deleteButton.className =
         "folder-action delete";
 
+
     deleteButton.textContent =
         "حذف";
 
@@ -681,18 +691,12 @@ function renderFolderItem(
     );
 
 
-    item.appendChild(
-        info
-    );
+    item.appendChild(info);
 
-    item.appendChild(
-        actions
-    );
+    item.appendChild(actions);
 
 
-    folderTree.appendChild(
-        item
-    );
+    folderTree.appendChild(item);
 
 
     /* =========================
@@ -700,26 +704,22 @@ function renderFolderItem(
     ========================= */
 
     const children =
-        data.folders.filter(
-            function (child) {
+        data.folders.filter(function (child) {
 
-                return child.parent ===
-                    folder.id;
+            return child.parent ===
+                folder.id;
 
-            }
+        });
+
+
+    children.forEach(function (child) {
+
+        renderFolderItem(
+            child,
+            level + 1
         );
 
-
-    children.forEach(
-        function (child) {
-
-            renderFolderItem(
-                child,
-                level + 1
-            );
-
-        }
-    );
+    });
 
 }
 
@@ -733,14 +733,12 @@ function selectFolder(
 ) {
 
     const folder =
-        data.folders.find(
-            function (folder) {
+        data.folders.find(function (folder) {
 
-                return folder.id ===
-                    folderId;
+            return folder.id ===
+                folderId;
 
-            }
-        );
+        });
 
 
     if (!folder) return;
@@ -773,14 +771,12 @@ function getFolderPath(
 
 
     let current =
-        data.folders.find(
-            function (folder) {
+        data.folders.find(function (folder) {
 
-                return folder.id ===
-                    folderId;
+            return folder.id ===
+                folderId;
 
-            }
-        );
+        });
 
 
     while (current) {
@@ -798,14 +794,12 @@ function getFolderPath(
 
 
         current =
-            data.folders.find(
-                function (folder) {
+            data.folders.find(function (folder) {
 
-                    return folder.id ===
-                        current.parent;
+                return folder.id ===
+                    current.parent;
 
-                }
-            );
+            });
 
     }
 
@@ -830,9 +824,13 @@ function renderFiles() {
     if (!selectedFolder) {
 
         fileList.innerHTML = `
+
             <div class="empty-state">
+
                 ابتدا یک پوشه را انتخاب کنید.
+
             </div>
+
         `;
 
         return;
@@ -841,22 +839,24 @@ function renderFiles() {
 
 
     const files =
-        data.files.filter(
-            function (file) {
+        data.files.filter(function (file) {
 
-                return file.folderId ===
-                    selectedFolder;
+            return file.folderId ===
+                selectedFolder;
 
-            }
-        );
+        });
 
 
     if (files.length === 0) {
 
         fileList.innerHTML = `
+
             <div class="empty-state">
+
                 این پوشه هنوز فایلی ندارد.
+
             </div>
+
         `;
 
         return;
@@ -864,176 +864,178 @@ function renderFiles() {
     }
 
 
-    files.forEach(
-        function (file) {
+    files.forEach(function (file) {
 
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "file-item";
-
-
-            const info =
-                document.createElement(
-                    "div"
-                );
-
-
-            info.className =
-                "file-info";
-
-
-            const name =
-                document.createElement(
-                    "div"
-                );
-
-
-            name.className =
-                "file-name";
-
-            name.textContent =
-                file.name;
-
-
-            const description =
-                document.createElement(
-                    "div"
-                );
-
-
-            description.className =
-                "file-description";
-
-            description.textContent =
-                file.description || "";
-
-
-            const size =
-                document.createElement(
-                    "div"
-                );
-
-
-            size.className =
-                "file-description";
-
-            size.textContent =
-                file.size
-                ?
-                "حجم: " + file.size
-                :
-                "حجم ثبت نشده";
-
-
-            const path =
-                document.createElement(
-                    "div"
-                );
-
-
-            path.className =
-                "file-description";
-
-            path.textContent =
-                file.path;
-
-
-            info.appendChild(name);
-
-            info.appendChild(description);
-
-            info.appendChild(size);
-
-            info.appendChild(path);
-
-
-            const actions =
-                document.createElement(
-                    "div"
-                );
-
-
-            actions.className =
-                "file-actions";
-
-
-            /* =========================
-               Edit File
-            ========================= */
-
-            const editButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            editButton.className =
-                "file-action";
-
-            editButton.textContent =
-                "ویرایش";
-
-
-            editButton.onclick =
-                function () {
-
-                    editFile(
-                        file.id
-                    );
-
-                };
-
-
-            /* =========================
-               Delete File
-            ========================= */
-
-            const deleteButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            deleteButton.className =
-                "file-action delete";
-
-            deleteButton.textContent =
-                "حذف";
-
-
-            deleteButton.onclick =
-                function () {
-
-                    deleteFile(
-                        file.id
-                    );
-
-                };
-
-
-            actions.appendChild(
-                editButton
-            );
-
-            actions.appendChild(
-                deleteButton
+        const item =
+            document.createElement(
+                "div"
             );
 
 
-            item.appendChild(info);
+        item.className =
+            "file-item";
 
-            item.appendChild(actions);
+
+        const info =
+            document.createElement(
+                "div"
+            );
 
 
-            fileList.appendChild(item);
+        info.className =
+            "file-info";
 
-        }
-    );
+
+        const name =
+            document.createElement(
+                "div"
+            );
+
+
+        name.className =
+            "file-name";
+
+
+        name.textContent =
+            file.name;
+
+
+        const description =
+            document.createElement(
+                "div"
+            );
+
+
+        description.className =
+            "file-description";
+
+
+        description.textContent =
+            file.description || "";
+
+
+        const size =
+            document.createElement(
+                "div"
+            );
+
+
+        size.className =
+            "file-description";
+
+
+        size.textContent =
+            file.size
+                ? "حجم: " + file.size
+                : "حجم ثبت نشده";
+
+
+        const path =
+            document.createElement(
+                "div"
+            );
+
+
+        path.className =
+            "file-description";
+
+
+        path.textContent =
+            file.path;
+
+
+        info.appendChild(name);
+
+        info.appendChild(description);
+
+        info.appendChild(size);
+
+        info.appendChild(path);
+
+
+        const actions =
+            document.createElement(
+                "div"
+            );
+
+
+        actions.className =
+            "file-actions";
+
+
+        /* =========================
+           Edit File
+        ========================= */
+
+        const editButton =
+            document.createElement(
+                "button"
+            );
+
+
+        editButton.className =
+            "file-action";
+
+
+        editButton.textContent =
+            "ویرایش";
+
+
+        editButton.onclick =
+            function () {
+
+                editFile(
+                    file.id
+                );
+
+            };
+
+
+        /* =========================
+           Delete File
+        ========================= */
+
+        const deleteButton =
+            document.createElement(
+                "button"
+            );
+
+
+        deleteButton.className =
+            "file-action delete";
+
+
+        deleteButton.textContent =
+            "حذف";
+
+
+        deleteButton.onclick =
+            function () {
+
+                deleteFile(
+                    file.id
+                );
+
+            };
+
+
+        actions.appendChild(
+            editButton
+        );
+
+        actions.appendChild(
+            deleteButton
+        );
+
+
+        item.appendChild(info);
+
+        item.appendChild(actions);
+
+
+        fileList.appendChild(item);
+
+    });
 
 }
 
@@ -1089,14 +1091,12 @@ document.getElementById(
         if (editingFolderId) {
 
             const folder =
-                data.folders.find(
-                    function (item) {
+                data.folders.find(function (item) {
 
-                        return item.id ===
-                            editingFolderId;
+                    return item.id ===
+                        editingFolderId;
 
-                    }
-                );
+                });
 
 
             if (folder) {
@@ -1199,14 +1199,12 @@ function editFolder(
 ) {
 
     const folder =
-        data.folders.find(
-            function (item) {
+        data.folders.find(function (item) {
 
-                return item.id ===
-                    folderId;
+            return item.id ===
+                folderId;
 
-            }
-        );
+        });
 
 
     if (!folder) return;
@@ -1239,14 +1237,12 @@ function deleteFolder(
 ) {
 
     const folder =
-        data.folders.find(
-            function (folder) {
+        data.folders.find(function (folder) {
 
-                return folder.id ===
-                    folderId;
+            return folder.id ===
+                folderId;
 
-            }
-        );
+        });
 
 
     if (!folder) return;
@@ -1258,11 +1254,13 @@ function deleteFolder(
         );
 
 
-    const totalFolderIds =
-        [
-            folderId,
-            ...childFolders
-        ];
+    const totalFolderIds = [
+
+        folderId,
+
+        ...childFolders
+
+    ];
 
 
     const childFolderCount =
@@ -1270,15 +1268,13 @@ function deleteFolder(
 
 
     const relatedFileCount =
-        data.files.filter(
-            function (file) {
+        data.files.filter(function (file) {
 
-                return totalFolderIds.includes(
-                    file.folderId
-                );
+            return totalFolderIds.includes(
+                file.folderId
+            );
 
-            }
-        ).length;
+        }).length;
 
 
     let message =
@@ -1315,27 +1311,23 @@ function deleteFolder(
 
 
     data.folders =
-        data.folders.filter(
-            function (item) {
+        data.folders.filter(function (item) {
 
-                return !totalFolderIds.includes(
-                    item.id
-                );
+            return !totalFolderIds.includes(
+                item.id
+            );
 
-            }
-        );
+        });
 
 
     data.files =
-        data.files.filter(
-            function (file) {
+        data.files.filter(function (file) {
 
-                return !totalFolderIds.includes(
-                    file.folderId
-                );
+            return !totalFolderIds.includes(
+                file.folderId
+            );
 
-            }
-        );
+        });
 
 
     if (
@@ -1380,33 +1372,29 @@ function getAllChildFolderIds(
 
 
     const children =
-        data.folders.filter(
-            function (folder) {
+        data.folders.filter(function (folder) {
 
-                return folder.parent ===
-                    folderId;
+            return folder.parent ===
+                folderId;
 
-            }
+        });
+
+
+    children.forEach(function (child) {
+
+        ids.push(
+            child.id
         );
 
 
-    children.forEach(
-        function (child) {
-
-            ids.push(
-                child.id
+        ids =
+            ids.concat(
+                getAllChildFolderIds(
+                    child.id
+                )
             );
 
-
-            ids =
-                ids.concat(
-                    getAllChildFolderIds(
-                        child.id
-                    )
-                );
-
-        }
-    );
+    });
 
 
     return ids;
@@ -1433,6 +1421,8 @@ addFileBtn.onclick =
 
 
         editingFileId = null;
+
+        selectedRealFile = null;
 
 
         fileName.value = "";
@@ -1521,9 +1511,19 @@ if (fileUpload) {
 
             if (!selectedFile) {
 
+                selectedRealFile = null;
+
                 return;
 
             }
+
+
+            /* =========================
+               Store Selected File
+            ========================= */
+
+            selectedRealFile =
+                selectedFile;
 
 
             /* =========================
@@ -1552,6 +1552,15 @@ if (fileUpload) {
                 "files/" +
                 selectedFile.name;
 
+
+            /* =========================
+               Notification
+            ========================= */
+
+            showNotification(
+                "فایل انتخاب شد."
+            );
+
         }
     );
 
@@ -1570,11 +1579,14 @@ document.getElementById(
         const name =
             fileName.value.trim();
 
+
         const description =
             fileDescription.value.trim();
 
+
         const size =
             fileSize.value.trim();
+
 
         const path =
             filePath.value.trim();
@@ -1609,14 +1621,12 @@ document.getElementById(
         if (editingFileId) {
 
             const file =
-                data.files.find(
-                    function (item) {
+                data.files.find(function (item) {
 
-                        return item.id ===
-                            editingFileId;
+                    return item.id ===
+                        editingFileId;
 
-                    }
-                );
+                });
 
 
             if (file) {
@@ -1649,6 +1659,15 @@ document.getElementById(
 
 
             editingFileId = null;
+
+            selectedRealFile = null;
+
+
+            if (fileUpload) {
+
+                fileUpload.value = "";
+
+            }
 
 
             showNotification(
@@ -1706,6 +1725,18 @@ document.getElementById(
         );
 
 
+        editingFileId = null;
+
+        selectedRealFile = null;
+
+
+        if (fileUpload) {
+
+            fileUpload.value = "";
+
+        }
+
+
         showNotification(
             "فایل با موفقیت اضافه شد."
         );
@@ -1722,14 +1753,12 @@ function editFile(
 ) {
 
     const file =
-        data.files.find(
-            function (item) {
+        data.files.find(function (item) {
 
-                return item.id ===
-                    fileId;
+            return item.id ===
+                fileId;
 
-            }
-        );
+        });
 
 
     if (!file) return;
@@ -1737,6 +1766,9 @@ function editFile(
 
     editingFileId =
         fileId;
+
+
+    selectedRealFile = null;
 
 
     fileName.value =
@@ -1781,14 +1813,12 @@ function deleteFile(
 ) {
 
     const file =
-        data.files.find(
-            function (file) {
+        data.files.find(function (file) {
 
-                return file.id ===
-                    fileId;
+            return file.id ===
+                fileId;
 
-            }
-        );
+        });
 
 
     if (!file) return;
@@ -1808,14 +1838,12 @@ function deleteFile(
 
 
     data.files =
-        data.files.filter(
-            function (file) {
+        data.files.filter(function (file) {
 
-                return file.id !==
-                    fileId;
+            return file.id !==
+                fileId;
 
-            }
-        );
+        });
 
 
     saveData();
@@ -1876,6 +1904,8 @@ refreshFoldersBtn.onclick =
 
 
         selectedFolder = null;
+
+        selectedRealFile = null;
 
 
         currentPath.textContent =
@@ -1939,6 +1969,16 @@ document.getElementById(
 
         editingFileId = null;
 
+        selectedRealFile = null;
+
+
+        if (fileUpload) {
+
+            fileUpload.value = "";
+
+        }
+
+
         fileModal.classList.remove(
             "active"
         );
@@ -1952,6 +1992,16 @@ document.getElementById(
     function () {
 
         editingFileId = null;
+
+        selectedRealFile = null;
+
+
+        if (fileUpload) {
+
+            fileUpload.value = "";
+
+        }
+
 
         fileModal.classList.remove(
             "active"
@@ -1993,6 +2043,16 @@ fileModal.onclick =
 
             editingFileId = null;
 
+            selectedRealFile = null;
+
+
+            if (fileUpload) {
+
+                fileUpload.value = "";
+
+            }
+
+
             fileModal.classList.remove(
                 "active"
             );
@@ -2018,6 +2078,15 @@ document.addEventListener(
             editingFolderId = null;
 
             editingFileId = null;
+
+            selectedRealFile = null;
+
+
+            if (fileUpload) {
+
+                fileUpload.value = "";
+
+            }
 
 
             folderModal.classList.remove(
