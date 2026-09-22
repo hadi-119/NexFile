@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت | NexFile</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+
+<!-- Header -->
+<header class="admin-header">
+    <div class="brand">
+        <span class="brand-name">NexFile</span>
+        <span class="brand-title">پنل مدیریت</span>
+    </div>
+
+    <a href="index.html" class="back-site">
+        مشاهده سایت
+    </a>
+</header>
+
+
+<!-- Main -->
+<main class="admin-container">
+
+    <!-- Dashboard -->
+    <section class="dashboard">
+
+        <div class="stat-card">
+            <div class="stat-number" id="folderCount">0</div>
+            <div class="stat-label">پوشه‌ها</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number" id="fileCount">0</div>
+            <div class="stat-label">فایل‌ها</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number" id="systemStatus">آماده</div>
+            <div class="stat-label">وضعیت سیستم</div>
+        </div>
+
+    </section>
+
+
+    <!-- Folder Management -->
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div>
+                <h2>مدیریت پوشه‌ها</h2>
+                <p>پوشه‌های سایت را از این بخش مدیریت کنید.</p>
+            </div>
+
+            <div class="panel-actions">
+
+                <button id="addFolderBtn" class="primary-btn">
+                    + افزودن پوشه
+                </button>
+
+                <button id="refreshFoldersBtn" class="secondary-btn">
+                    بروزرسانی
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div id="folderTree" class="folder-tree">
+
+            <div class="empty-state">
+                هنوز پوشه‌ای ثبت نشده است.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- File Management -->
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div>
+                <h2>مدیریت فایل‌ها</h2>
+                <p>فایل‌های موجود در پوشه انتخاب‌شده را مدیریت کنید.</p>
+            </div>
+
+        </div>
+
+
+        <div class="current-path" id="currentPath">
+            خانه
+        </div>
+
+
+        <div class="toolbar">
+
+            <button id="addFileBtn" class="primary-btn">
+                + افزودن فایل
+            </button>
+
+        </div>
+
+
+        <div id="fileList" class="file-list">
+
+            <div class="empty-state">
+                ابتدا یک پوشه را انتخاب کنید.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Save -->
+    <section class="panel save-panel">
+
+        <div>
+
+            <h2>ذخیره تغییرات</h2>
+
+            <p>
+                تغییرات فعلی را در سیستم ذخیره کنید.
+            </p>
+
+        </div>
+
+
+        <div class="save-area">
+
+            <button id="saveChanges" class="save-btn">
+                ذخیره تغییرات
+            </button>
+
+            <div id="saveStatus" class="save-status"></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- Folder Modal -->
+<div id="folderModal" class="modal">
+
+    <div class="modal-box">
+
+        <button class="modal-close" id="closeFolderModal">
+            ×
+        </button>
+
+        <h2>افزودن پوشه</h2>
+
+        <p>
+            نام پوشه جدید را وارد کنید.
+        </p>
+
+
+        <div class="form-group">
+
+            <label for="folderName">
+                نام پوشه
+            </label>
+
+            <input
+                type="text"
+                id="folderName"
+                placeholder="مثلاً برنامه نویسی"
+            >
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelFolder"
+                class="secondary-btn"
+            >
+                انصراف
+            </button>
+
+            <button
+                id="createFolder"
+                class="primary-btn"
+            >
+                ایجاد پوشه
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- File Modal -->
+<div id="fileModal" class="modal">
+
+    <div class="modal-box">
+
+        <button class="modal-close" id="closeFileModal">
+            ×
+        </button>
+
+        <h2>افزودن فایل</h2>
+
+        <p>
+            اطلاعات فایل جدید را وارد کنید.
+        </p>
+
+
+        <!-- File Name -->
+        <div class="form-group">
+
+            <label for="fileName">
+                نام فایل
+            </label>
+
+            <input
+                type="text"
+                id="fileName"
+                placeholder="مثلاً جلسه اول"
+            >
+
+        </div>
+
+
+        <!-- Description -->
+        <div class="form-group">
+
+            <label for="fileDescription">
+                توضیحات
+            </label>
+
+            <input
+                type="text"
+                id="fileDescription"
+                placeholder="توضیح کوتاه درباره فایل"
+            >
+
+        </div>
+
+
+        <!-- File Size -->
+        <div class="form-group">
+
+            <label for="fileSize">
+                حجم فایل
+            </label>
+
+            <input
+                type="text"
+                id="fileSize"
+                placeholder="مثلاً 2 MB"
+            >
+
+        </div>
+
+
+        <!-- File Upload -->
+        <div class="form-group">
+
+            <label for="fileUpload">
+                انتخاب فایل واقعی
+            </label>
+
+            <input
+                type="file"
+                id="fileUpload"
+            >
+
+        </div>
+
+
+        <!-- File Path -->
+        <div class="form-group">
+
+            <label for="filePath">
+                مسیر فایل
+            </label>
+
+            <input
+                type="text"
+                id="filePath"
+                placeholder="مثلاً files/example.pdf"
+            >
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelFile"
+                class="secondary-btn"
+            >
+                انصراف
+            </button>
+
+            <button
+                id="createFile"
+                class="primary-btn"
+            >
+                افزودن فایل
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Notification -->
+<div id="notification" class="notification"></div>
+
+
+<script src="admin.js"></script>
+
+
+</body>
+</html>
